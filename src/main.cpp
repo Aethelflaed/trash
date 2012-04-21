@@ -5,21 +5,23 @@
 #include "Options.hpp"
 #include <utility>
 
-using namespace ::std;
-
 namespace po = ::boost::program_options;
 
 int main(int argc, const char** argv)
 {
 	Options options;
-	options.store_cli(argc, argv);
 
 	po::variables_map* vm;
-	vm = options.notify();
 
-	if (vm->count("help"))
+	try
 	{
-		cout << options << "\n";
+		options.store_cli(argc, argv);
+		vm = options.notify();
+	}
+	catch (const boost::program_options::error& e)
+	{
+		std::cerr << e.what() << std::endl;
+		exit(1);
 	}
 
 	return 0;

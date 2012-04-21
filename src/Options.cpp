@@ -4,6 +4,7 @@
 #include <utility>
 #include <string>
 #include <fstream>
+#include <boost/bind.hpp>
 
 Options::Options() noexcept
 	:generic("Generic options"),
@@ -67,10 +68,19 @@ std::ostream& operator<<(std::ostream& stream, const Options& options)
 	return stream;
 }
 
+void Options::help(bool value)
+{
+	if (value)
+	{
+		std::cout << visible_options << std::endl;
+	}
+}
+
 void Options::initialize_options() noexcept
 {
 	generic.add_options()
-		("help,h", "produce help message and exit")
+		("help,h", po::bool_switch()->notifier(boost::bind(&Options::help, this, _1)), "produce help message and exit")
+		//("help,h", po::bool_switch()->notifier(&callback), "produce help message and exit")
 		("version,V", "print version message and exit")
 		;
 

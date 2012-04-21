@@ -21,6 +21,8 @@ public:
 	po::variables_map* notify();
 
 	friend std::ostream& operator<<(std::ostream& stream, const Options& options);
+
+	void help(bool value = true);
 private:
 	void initialize_options() noexcept;
 
