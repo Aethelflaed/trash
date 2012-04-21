@@ -32,8 +32,6 @@ program=$(bindir)/$(program_name)
 all: debug $(localdirs) $(program)
 
 debug:
-	echo $(srcs)
-	echo $(objs)
 
 clean:
 	$(RM) -r $(objdir)
