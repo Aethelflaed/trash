@@ -23,8 +23,10 @@ public:
 	friend std::ostream& operator<<(std::ostream& stream, const Options& options);
 
 	void help(bool value = true);
+	void version(bool value = true);
 private:
 	void initialize_options() noexcept;
+	po::typed_value<bool>* make_bool_switch(void (Options::*callback)(bool));
 
 	po::variables_map vm;
 

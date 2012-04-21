@@ -73,14 +73,23 @@ void Options::help(bool value)
 	if (value)
 	{
 		std::cout << visible_options << std::endl;
+		exit(0);
+	}
+}
+
+void Options::version(bool value)
+{
+	if (value)
+	{
+		std::cout << "Version 1.0" << std::endl;
+		exit(0);
 	}
 }
 
 void Options::initialize_options() noexcept
 {
 	generic.add_options()
-		("help,h", po::bool_switch()->notifier(boost::bind(&Options::help, this, _1)), "produce help message and exit")
-		//("help,h", po::bool_switch()->notifier(&callback), "produce help message and exit")
+		("help,h", make_bool_switch(&Options::help), "produce help message and exit")
 		("version,V", "print version message and exit")
 		;
 
@@ -97,5 +106,10 @@ void Options::initialize_options() noexcept
 	cli_options.add(generic).add(config).add(hidden);
 	config_options.add(config).add(hidden);
 	visible_options.add(generic).add(config);
+}
+
+po::typed_value<bool>* Options::make_bool_switch(void (Options::*callback)(bool))
+{
+	return po::bool_switch()->notifier(boost::bind(callback, this, _1));
 }
 
