@@ -264,6 +264,7 @@ void Options::initialize_options() noexcept
 		;
 
 	hidden.add_options()
+		//("input-file", po::value<std::vector<std::string>>(), "input file")
 		("input-file", po::value<std::vector<std::string>>()->notifier(boost::bind(&Options::setInputFiles, this, _1)), "input file")
 		;
 

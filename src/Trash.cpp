@@ -1,7 +1,4 @@
 #include "Trash.hpp"
-#include <boost/filesystem.hpp>
-
-namespace fs = ::boost::filesystem;
 
 Trash::Trash(int argc, const char** argv) noexcept
 {
@@ -11,6 +8,21 @@ Trash::Trash(int argc, const char** argv) noexcept
 
 int Trash::run()
 {
+	for (const std::string& file : options.getInputFiles())
+	{
+		fs::path path{file};
+
+		if (fs::exists(path))
+		{
+			std::cout << "Path " << path << "exists !" << std::endl;
+		}
+		else
+		{
+			std::cout << path << " doesn't exist !" << std::endl;
+		}
+
+		paths.push_back(path);
+	}
 	return 0;
 }
 
