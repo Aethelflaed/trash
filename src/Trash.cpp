@@ -1,4 +1,7 @@
 #include "Trash.hpp"
+#include <boost/filesystem.hpp>
+
+namespace fs = ::boost::filesystem;
 
 Trash::Trash(int argc, const char** argv) noexcept
 {
