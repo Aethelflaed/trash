@@ -13,16 +13,8 @@ int main(int argc, const char** argv)
 
 	po::variables_map* vm;
 
-	try
-	{
-		options.store_cli(argc, argv);
-		vm = options.notify();
-	}
-	catch (const boost::program_options::error& e)
-	{
-		std::cerr << e.what() << std::endl;
-		exit(1);
-	}
+	options.store_cli(argc, argv);
+	options.notify();
 
 	return 0;
 }

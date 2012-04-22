@@ -7,58 +7,48 @@
 #include <boost/bind.hpp>
 
 Options::Options() noexcept
-	:generic("Generic options"),
-	 config("Configuration"),
-	 hidden("Hidden options"),
-	 positional(),
-	 cli_options("."),		// May cause pointer being freed was not allocated
-	 config_options("."),	// if there is no name
-	 visible_options("Allowed options")
 {
 	initialize_options();
 }
 
-Options::Options(const Options& options) noexcept
-	:vm(options.vm),
-	 generic(options.generic),
-	 config(options.config),
-	 hidden(options.hidden),
-	 positional(options.positional),
-	 cli_options(options.cli_options),
-	 config_options(options.config_options),
-	 visible_options(options.visible_options)
+void Options::store_cli(int argc, const char** argv) noexcept
 {
+	try
+	{
+		po::store(po::command_line_parser(argc, argv)
+				.options(cli_options)
+				.positional(positional)
+				.run(), vm);
+	}
+	catch (const boost::program_options::error& e)
+	{
+		abort(e.what());
+	}
 }
 
-Options::Options(Options&& options) noexcept
-	:vm(std::move(options.vm)),
-	 generic(std::move(options.generic)),
-	 config(std::move(options.config)),
-	 hidden(std::move(options.hidden)),
-	 positional(std::move(options.positional)),
-	 cli_options(std::move(options.cli_options)),
-	 config_options(std::move(options.config_options)),
-	 visible_options(std::move(options.visible_options))
+void Options::store_config(const std::string& filename) noexcept
 {
+	try
+	{
+		std::ifstream file(filename);
+		po::store(po::parse_config_file(file, config_options), vm);
+	}
+	catch (const boost::program_options::error& e)
+	{
+		abort(e.what());
+	}
 }
 
-void Options::store_cli(int argc, const char** argv)
+po::variables_map* Options::notify() noexcept
 {
-	po::store(po::command_line_parser(argc, argv)
-			.options(cli_options)
-			.positional(positional)
-			.run(), vm);
-}
-
-void Options::store_config(const std::string& filename)
-{
-	std::ifstream file(filename);
-	po::store(po::parse_config_file(file, config_options), vm);
-}
-
-po::variables_map* Options::notify()
-{
-	po::notify(vm);
+	try
+	{
+		po::notify(vm);
+	}
+	catch (const boost::program_options::error& e)
+	{
+		abort(e.what());
+	}
 	return &vm;
 }
 
@@ -86,9 +76,142 @@ void Options::version(bool value)
 {
 	if (value)
 	{
-		std::cout << "Version 1.0" << std::endl;
+		std::cout << program_name << " 1.0" << std::endl;
+		std::cout << copyright << std::endl;
 		exit(0);
 	}
+}
+
+bool Options::isForce() const noexcept
+{
+	return force;
+}
+Options& Options::setForce(bool force) noexcept
+{
+	this->force = force;
+	return *this;
+}
+
+bool Options::isVerbose() const noexcept
+{
+	return verbose;
+}
+Options& Options::setVerbose(bool verbose) noexcept
+{
+	this->verbose = verbose;
+	return *this;
+}
+
+bool Options::isRecursive() const noexcept
+{
+	return recursive;
+}
+Options& Options::setRecursive(bool recursive) noexcept
+{
+	this->recursive = recursive;
+	return *this;
+}
+
+bool Options::isPreserveRoot() const noexcept
+{
+	return preserve_root;
+}
+Options& Options::setPreserveRoot(bool preserve_root) noexcept
+{
+	this->preserve_root = preserve_root;
+	return *this;
+}
+Options& Options::setNoPreserveRoot(bool no_preserve_root) noexcept
+{
+	this->preserve_root = ! preserve_root;
+	return *this;
+}
+
+bool Options::isOneFileSystem() const noexcept
+{
+	return one_file_system;
+}
+Options& Options::setOneFileSystem(bool one_file_system) noexcept
+{
+	this->one_file_system = one_file_system;
+	return *this;
+}
+
+bool Options::isUnlink() const noexcept
+{
+	return unlink;
+}
+Options& Options::setUnlink(bool unlink) noexcept
+{
+	this->unlink = unlink;
+	return *this;
+}
+
+Options::Interactive Options::getInteractive() const noexcept
+{
+	return interactive;
+}
+Options& Options::setInteractive(Interactive interactive) noexcept
+{
+	this->interactive = interactive;
+	return *this;
+}
+Options& Options::setInteractiveString(const std::string& interactive) noexcept
+{
+	if (interactive == "once")
+	{
+		this->interactive = Interactive::once;
+	}
+	else if (interactive == "always")
+	{
+		this->interactive = Interactive::always;
+	}
+	else if (interactive == "never")
+	{
+		this->interactive = Interactive::never;
+	}
+	else
+	{
+		abort(std::string("invalid parameter for --interactive -- ") + interactive);
+	}
+	return *this;
+}
+Options& Options::setInteractiveOnce(bool value) noexcept
+{
+	if (value)
+	{
+		interactive = Interactive::once;
+	}
+	return *this;
+}
+Options& Options::setInteractiveAlways(bool value) noexcept
+{
+	if (value)
+	{
+		interactive = Interactive::always;
+	}
+	return *this;
+}
+
+const std::string& Options::getTrashCan() const noexcept
+{
+	return trash_can;
+}
+Options& Options::setTrashCan(const std::string& trash_can) noexcept
+{
+	this->trash_can = trash_can;
+	return *this;
+}
+
+void Options::abort(const char* msg)
+{
+	abort(std::string(msg));
+}
+void Options::abort(const std::string& msg)
+{
+	std::cerr << program_name << ": " << msg << std::endl;
+	std::cerr << try_msg() << std::endl;
+	exit(1);
 }
 
 void Options::initialize_options() noexcept
@@ -99,7 +222,21 @@ void Options::initialize_options() noexcept
 		;
 
 	config.add_options()
-		("trash,t", po::value<std::string>(), "specify trash can location")
+		("recursive,r", make_bool_switch(&Options::setRecursive), "remove file hierarchies")
+		("folders,R", make_bool_switch(&Options::setRecursive), "remove file hierarchies")
+		("verbose,v", make_bool_switch(&Options::setVerbose), "report any action")
+		("force,f", make_bool_switch(&Options::setForce), "ignore nonexistent files, never prompt")
+		("interactive", po::value<std::string>()->notifier(boost::bind(&Options::setInteractiveString, this, _1)), "prompt according to arg: never, once (-I), or always (-i).  Without arg, prompt always")
+		("interactive-once,I", make_bool_switch(&Options::setInteractiveOnce), "prompt once before removing more than three files, or when removing recursively.  Less intrusive than -i, while still giving protection against most mistakes")
+		("interactive-always,i", make_bool_switch(&Options::setInteractiveAlways), "prompt before every removal")
+		("preserve-root", make_bool_switch(&Options::setPreserveRoot), "fail to operate recursively on '/'")
+		("no-preserve-root", make_bool_switch(&Options::setNoPreserveRoot), "do not treat '/' specially (the default)")
+		("one-file-system", make_bool_switch(&Options::setOneFileSystem), "when removing a hierarchy recursively, skip any directory that is on a file system different from that of the corresponding command line argument")
+		;
+
+	trash_options.add_options()
+		("trash,t", po::value<std::string>()->notifier(boost::bind(&Options::setTrashCan, this, _1)), "specify trash can location")
+		("unlink,u", make_bool_switch(&Options::setUnlink), "unlink (delete) files directly (as rm)")
 		;
 
 	hidden.add_options()
@@ -108,12 +245,17 @@ void Options::initialize_options() noexcept
 
 	positional.add("input-file", -1);
 
-	cli_options.add(generic).add(config).add(hidden);
-	config_options.add(config).add(hidden);
-	visible_options.add(generic).add(config);
+	cli_options.add(config).add(trash_options).add(generic).add(hidden);
+	config_options.add(config).add(trash_options).add(hidden);
+	visible_options.add(config).add(trash_options).add(generic);
 }
 
 po::typed_value<bool>* Options::make_bool_switch(void (Options::*callback)(bool))
+{
+	return po::bool_switch()->notifier(boost::bind(callback, this, _1));
+}
+
+po::typed_value<bool>* Options::make_bool_switch(Options& (Options::*callback)(bool) noexcept (true))
 {
 	return po::bool_switch()->notifier(boost::bind(callback, this, _1));
 }
