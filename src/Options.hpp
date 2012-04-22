@@ -22,12 +22,15 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& stream, const Options& options);
 
+	std::string try_msg() const;
+
 	void help(bool value = true);
 	void version(bool value = true);
 private:
 	void initialize_options() noexcept;
 	po::typed_value<bool>* make_bool_switch(void (Options::*callback)(bool));
 
+	std::string program_name{"trash"};
 	po::variables_map vm;
 
 	po::options_description generic;

@@ -64,8 +64,13 @@ po::variables_map* Options::notify()
 
 std::ostream& operator<<(std::ostream& stream, const Options& options)
 {
-	stream << options.visible_options;
+	stream << options.try_msg();
 	return stream;
+}
+
+std::string Options::try_msg() const
+{
+	return std::string("Try `") + program_name + " --help` for more information.";
 }
 
 void Options::help(bool value)
@@ -90,7 +95,7 @@ void Options::initialize_options() noexcept
 {
 	generic.add_options()
 		("help,h", make_bool_switch(&Options::help), "produce help message and exit")
-		("version,V", "print version message and exit")
+		("version,V", make_bool_switch(&Options::version), "print version message and exit")
 		;
 
 	config.add_options()
