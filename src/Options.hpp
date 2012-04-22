@@ -52,14 +52,20 @@ public:
 	Interactive getInteractive() const noexcept;
 	Options& setInteractive(Interactive interactive) noexcept;
 private:
-	Options& setInteractiveString(const std::string& interactive) noexcept;
-	Options& setInteractiveOnce(bool value) noexcept;
-	Options& setInteractiveAlways(bool value) noexcept;
+	void setInteractiveString(const std::string& interactive) noexcept;
+	void setInteractiveOnce(bool value) noexcept;
+	void setInteractiveAlways(bool value) noexcept;
 
 public:
 	const std::string& getTrashCan() const noexcept;
 	Options& setTrashCan(const std::string& trash_can) noexcept;
 
+	const std::vector<std::string>& getInputFiles() const noexcept;
+private:
+	void setInputFiles(const std::vector<std::string>& input_files) noexcept;
+
+
+public:
 	enum class Interactive
 	{
 		never,
@@ -85,6 +91,7 @@ private:
 	bool unlink{false};
 	Interactive interactive{Interactive::never};
 	std::string trash_can;
+	std::vector<std::string> input_files;
 
 	po::variables_map vm;
 

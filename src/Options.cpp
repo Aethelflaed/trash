@@ -99,6 +99,10 @@ bool Options::isForce() const noexcept
 Options& Options::setForce(bool force) noexcept
 {
 	this->force = force;
+	if (force)
+	{
+		setInteractive(Interactive::never);
+	}
 	return *this;
 }
 
@@ -164,43 +168,44 @@ Options::Interactive Options::getInteractive() const noexcept
 Options& Options::setInteractive(Interactive interactive) noexcept
 {
 	this->interactive = interactive;
+	if (interactive != Interactive::never)
+	{
+		this->setForce(false);
+	}
 	return *this;
 }
-Options& Options::setInteractiveString(const std::string& interactive) noexcept
+void Options::setInteractiveString(const std::string& interactive) noexcept
 {
 	if (interactive == "once")
 	{
-		this->interactive = Interactive::once;
+		setInteractive(Interactive::once);
 	}
 	else if (interactive == "always")
 	{
-		this->interactive = Interactive::always;
+		setInteractive(Interactive::always);
 	}
 	else if (interactive == "never")
 	{
-		this->interactive = Interactive::never;
+		setInteractive(Interactive::never);
 	}
 	else
 	{
 		abort(std::string("invalid parameter for --interactive -- ") + interactive);
 	}
-	return *this;
 }
-Options& Options::setInteractiveOnce(bool value) noexcept
+void Options::setInteractiveOnce(bool value) noexcept
 {
 	if (value)
 	{
-		interactive = Interactive::once;
+		setInteractive(Interactive::once);
 	}
-	return *this;
 }
-Options& Options::setInteractiveAlways(bool value) noexcept
+void Options::setInteractiveAlways(bool value) noexcept
 {
 	if (value)
 	{
-		interactive = Interactive::always;
+		setInteractive(Interactive::always);
 	}
-	return *this;
 }
 
 const std::string& Options::getTrashCan() const noexcept
@@ -211,6 +216,15 @@ Options& Options::setTrashCan(const std::string& trash_can) noexcept
 {
 	this->trash_can = trash_can;
 	return *this;
+}
+
+const std::vector<std::string>& Options::getInputFiles() const noexcept
+{
+	return input_files;
+}
+void Options::setInputFiles(const std::vector<std::string>& input_files) noexcept
+{
+	this->input_files = input_files;
 }
 
 void Options::abort(const char* msg)
@@ -250,7 +264,7 @@ void Options::initialize_options() noexcept
 		;
 
 	hidden.add_options()
-		("input-file", po::value<std::vector<std::string>>(), "input file")
+		("input-file", po::value<std::vector<std::string>>()->notifier(boost::bind(&Options::setInputFiles, this, _1)), "input file")
 		;
 
 	positional.add("input-file", -1);
