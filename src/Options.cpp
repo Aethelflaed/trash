@@ -76,6 +76,7 @@ void Options::help(bool value)
 {
 	if (value)
 	{
+		std::cout << program_name << ": " << usage() << std::endl;
 		std::cout << visible_options << std::endl;
 		exit(0);
 	}
