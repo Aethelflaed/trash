@@ -227,7 +227,7 @@ void Options::setInputFiles(const std::vector<std::string>& input_files) noexcep
 	this->input_files = input_files;
 }
 
-const std::string& getProgramName() const noexcept
+const std::string& Options::getProgramName() const noexcept
 {
 	return program_name;
 }
