@@ -1,8 +1,9 @@
 #include "Trash.hpp"
 
 Trash::Trash(int argc, const char** argv) noexcept
-	:Application{argc, argv}
 {
+	options.store_cli(argc, argv);
+	options.notify();
 }
 
 int Trash::run()

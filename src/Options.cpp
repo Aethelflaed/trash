@@ -44,6 +44,10 @@ po::variables_map* Options::notify() noexcept
 	try
 	{
 		po::notify(vm);
+		if (vm.count("input-file") == 0)
+		{
+			throw po::error(usage());
+		}
 	}
 	catch (const boost::program_options::error& e)
 	{
@@ -61,6 +65,11 @@ std::ostream& operator<<(std::ostream& stream, const Options& options)
 std::string Options::try_msg() const
 {
 	return std::string("Try `") + program_name + " --help` for more information.";
+}
+
+std::string Options::usage() const
+{
+	return std::string("usage `") + program_name + " [OPTIONS] file ...`";
 }
 
 void Options::help(bool value)

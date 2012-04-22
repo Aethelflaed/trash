@@ -25,6 +25,7 @@ public:
 	friend std::ostream& operator<<(std::ostream& stream, const Options& options);
 
 	std::string try_msg() const;
+	std::string usage() const;
 
 	void help(bool value = true);
 	void version(bool value = true);
