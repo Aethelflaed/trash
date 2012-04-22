@@ -66,6 +66,8 @@ private:
 
 
 public:
+	const std::string& getProgramName() const noexcept;
+
 	enum class Interactive
 	{
 		never,
