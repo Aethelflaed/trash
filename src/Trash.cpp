@@ -1,11 +1,16 @@
 #include "Trash.hpp"
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem/fstream.hpp>
+#include <unistd.h>
 
 Trash::Trash(int argc, const char** argv) noexcept
 {
 	options.store_cli(argc, argv);
 	options.notify();
+	if (isatty(fileno(stdin)))
+	{
+		options.setForce(true);
+	}
 }
 
 int Trash::run()
