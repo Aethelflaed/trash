@@ -7,7 +7,7 @@ Trash::Trash(int argc, const char** argv) noexcept
 {
 	options.store_cli(argc, argv);
 	options.notify();
-	if (isatty(fileno(stdin)))
+	if (isatty(fileno(stdin)) == false)
 	{
 		options.setForce(true);
 	}
@@ -22,11 +22,11 @@ int Trash::run()
 		{
 			msg = "remove all arguments recursively?";
 		}
-		else
+		else if (options.getInputFiles().size() > 3)
 		{
 			msg = "remove all arguments?";
 		}
-		if (ask(msg) == false)
+		if (msg.size() > 0 && ask(msg) == false)
 		{
 			exit(0);
 		}
@@ -37,6 +37,7 @@ int Trash::run()
 		fs::path path = this->check(file);
 		if (path.empty() == false && this->prompt(path))
 		{
+			std::cout << path << std::endl;
 			remove_file(path);
 		}
 	}
