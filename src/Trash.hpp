@@ -26,6 +26,7 @@ private:
 
 	void abort(const std::string& file, const char* msg);
 	void abort(const fs::path& file, const char* msg);
+	void abort(const std::string& msg);
 	void report(const std::string& file, const char* msg);
 	void report(const fs::path& file, const char* msg);
 	void report_basic(const std::string& msg);

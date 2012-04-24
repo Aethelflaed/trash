@@ -11,6 +11,21 @@ Trash::Trash(int argc, const char** argv) noexcept
 	{
 		options.setForce(true);
 	}
+	if ((options.getTrashCan().empty() ||
+		fs::exists(options.getTrashCan()) == false) &&
+		options.isUnlink() == false)
+	{
+		std::string trash_can{options.getHome() + "/.trash"};
+		options.setTrashCan(trash_can);
+		if (fs::exists(trash_can) == false)
+		{
+			message("setting default trash can to ‘" + trash_can + "’\n");
+			if (fs::create_directory(trash_can) == false)
+			{
+				abort("failed to create default trash can");
+			}
+		}
+	}
 }
 
 int Trash::run()
@@ -68,7 +83,7 @@ bool Trash::prompt(fs::path& path)
 	if (options.isForce() == false ||
 		options.getInteractive() == Options::Interactive::always)
 	{
-		fs::perms permissions = fs::status(path).permissions();
+		//fs::perms permissions = fs::status(path).permissions();
 		std::string file_type;
 		if (fs::is_directory(path))
 		{
@@ -164,6 +179,11 @@ void Trash::abort(const std::string& file, const char* msg)
 void Trash::abort(const fs::path& file, const char* msg)
 {
 	abort(file.string(), msg);
+}
+void Trash::abort(const std::string& msg)
+{
+	report_basic(msg);
+	exit(status);
 }
 
 void Trash::report(const std::string& file, const char* msg)
