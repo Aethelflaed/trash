@@ -20,6 +20,7 @@ public:
 
 	void store_cli(int argc, const char** argv) noexcept;
 	void store_config(const std::string& file) noexcept;
+	void store_environment() noexcept;
 	po::variables_map* notify() noexcept;
 
 	friend std::ostream& operator<<(std::ostream& stream, const Options& options);
@@ -64,6 +65,16 @@ public:
 private:
 	void setInputFiles(const std::vector<std::string>& input_files) noexcept;
 
+public:
+	const std::string& getHome() const noexcept;
+private:
+	void setHome(const std::string& home) noexcept;
+
+public:
+	const std::string& getUser() const noexcept;
+private:
+	void setUser(const std::string& user) noexcept;
+
 
 public:
 	const std::string& getProgramName() const noexcept;
@@ -82,6 +93,8 @@ private:
 	po::typed_value<bool>* make_bool_switch(void (Options::*callback)(bool));
 	po::typed_value<bool>* make_bool_switch(Options& (Options::*callback)(bool) noexcept (true));
 
+	std::string parse_env(const std::string& variable);
+
 	std::string program_name{"trash"};
 	std::string copyright{"Written by Geoffroy Planquart <geoffroy@aethelflaed.com>"};
 
@@ -94,6 +107,8 @@ private:
 	Interactive interactive{Interactive::never};
 	std::string trash_can;
 	std::vector<std::string> input_files;
+	std::string home;
+	std::string user;
 
 	po::variables_map vm;
 
@@ -106,6 +121,7 @@ private:
 	po::options_description cli_options{"."};
 	po::options_description config_options{"."};
 	po::options_description visible_options{"Allowed options"};
+	po::options_description env_options{"."};
 };
 
 #endif /* TRASH_OPTIONS_HPP */

@@ -20,7 +20,7 @@ void Options::store_cli(int argc, const char** argv) noexcept
 				.positional(positional)
 				.run(), vm);
 	}
-	catch (const boost::program_options::error& e)
+	catch (const po::error& e)
 	{
 		abort(e.what());
 	}
@@ -33,7 +33,20 @@ void Options::store_config(const std::string& filename) noexcept
 		std::ifstream file(filename);
 		po::store(po::parse_config_file(file, config_options), vm);
 	}
-	catch (const boost::program_options::error& e)
+	catch (const po::error& e)
+	{
+		abort(e.what());
+	}
+}
+
+void Options::store_environment() noexcept
+{
+	try
+	{
+		po::store(po::parse_environment(env_options,
+					boost::bind<std::string>(&Options::parse_env, this, _1)), vm);
+	}
+	catch (const po::error& e)
 	{
 		abort(e.what());
 	}
@@ -49,7 +62,7 @@ po::variables_map* Options::notify() noexcept
 			throw po::error(usage());
 		}
 	}
-	catch (const boost::program_options::error& e)
+	catch (const po::error& e)
 	{
 		abort(e.what());
 	}
@@ -227,6 +240,24 @@ void Options::setInputFiles(const std::vector<std::string>& input_files) noexcep
 	this->input_files = input_files;
 }
 
+const std::string& Options::getHome() const noexcept
+{
+	return home;
+}
+void Options::setHome(const std::string& home) noexcept
+{
+	this->home = home;
+}
+
+const std::string& Options::getUser() const noexcept
+{
+	return user;
+}
+void Options::setUser(const std::string& user) noexcept
+{
+	this->user = user;
+}
+
 const std::string& Options::getProgramName() const noexcept
 {
 	return program_name;
@@ -278,6 +309,11 @@ void Options::initialize_options() noexcept
 	cli_options.add(config).add(trash_options).add(generic).add(hidden);
 	config_options.add(config).add(trash_options).add(hidden);
 	visible_options.add(config).add(trash_options).add(generic);
+
+	env_options.add_options()
+		("home", po::value<std::string>()->notifier(boost::bind(&Options::setHome, this, _1)), "")
+		("user", po::value<std::string>()->notifier(boost::bind(&Options::setUser, this, _1)), "")
+		;
 }
 
 po::typed_value<bool>* Options::make_bool_switch(void (Options::*callback)(bool))
@@ -288,5 +324,18 @@ po::typed_value<bool>* Options::make_bool_switch(void (Options::*callback)(bool)
 po::typed_value<bool>* Options::make_bool_switch(Options& (Options::*callback)(bool) noexcept (true))
 {
 	return po::bool_switch()->notifier(boost::bind(callback, this, _1));
+}
+
+std::string Options::parse_env(const std::string& variable)
+{
+	if (variable == "USER")
+	{
+		return "user";
+	}
+	else if (variable == "HOME")
+	{
+		return "home";
+	}
+	return "";
 }
 

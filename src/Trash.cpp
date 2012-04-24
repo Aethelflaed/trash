@@ -5,8 +5,8 @@
 
 Trash::Trash(int argc, const char** argv) noexcept
 {
-	options.store_cli(argc, argv);
-	options.notify();
+	parse_config(argc, argv);
+
 	if (isatty(fileno(stdin)) == false)
 	{
 		options.setForce(true);
@@ -191,5 +191,19 @@ void Trash::message(const std::string& msg, std::ostream& stream)
 {
 	stream << options.getProgramName()
 		<< ": " << msg << std::flush;
+}
+
+void Trash::parse_config(int argc, const char** argv)
+{
+	options.store_environment();
+	options.store_cli(argc, argv);
+	options.notify();
+
+	fs::path config_file{options.getHome() + "/.trashrc"};
+	if (fs::exists(config_file) && fs::is_regular_file(config_file))
+	{
+		options.store_config(config_file.string());
+		options.notify();
+	}
 }
 

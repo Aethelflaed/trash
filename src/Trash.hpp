@@ -32,6 +32,8 @@ private:
 	void report_basic(const char* msg);
 	void message(const std::string& msg, std::ostream& stream = std::cout);
 
+	void parse_config(int argc, const char** argv);
+
 	Options options{};
 	int status{0};
 };
