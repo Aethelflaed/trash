@@ -24,8 +24,10 @@ private:
 
 	fs::path check(const std::string& file);
 
-	void abort(const std::string&, const char* msg);
-	void report(const std::string&, const char* msg);
+	void abort(const std::string& file, const char* msg);
+	void abort(const fs::path& file, const char* msg);
+	void report(const std::string& file, const char* msg);
+	void report(const fs::path& file, const char* msg);
 	void report_basic(const std::string& msg);
 	void report_basic(const char* msg);
 	void message(const std::string& msg, std::ostream& stream = std::cout);

@@ -35,21 +35,27 @@ int Trash::run()
 	for (const std::string& file : options.getInputFiles())
 	{
 		fs::path path = this->check(file);
-		if (path.empty() == false && this->prompt(path))
-		{
-			std::cout << path << std::endl;
-			remove_file(path);
-		}
+		remove_file(path);
 	}
 	return status;
 }
 
 void Trash::remove_file(fs::path& path)
 {
+	if (path.empty() || this->prompt(path) == false)
+	{
+		return;
+	}
 	if (fs::is_directory(path))
 	{
 		remove_directory(path);
-		return;
+	}
+	else if (options.isUnlink())
+	{
+		if (fs::remove(path) == false)
+		{
+			report(path, "Permission denied");
+		}
 	}
 }
 
@@ -62,7 +68,25 @@ bool Trash::prompt(fs::path& path)
 	if (options.isForce() == false ||
 		options.getInteractive() == Options::Interactive::always)
 	{
-		fs::ofstream ostream{path};
+		fs::perms permissions = fs::status(path).permissions();
+		std::string file_type;
+		if (fs::is_directory(path))
+		{
+			file_type = "directory ";
+		}
+		if (fs::is_regular_file(path))
+		{
+			if (fs::file_size(path) == 0)
+			{
+				file_type = "regular empty file ";
+			}
+			else
+			{
+				file_type = "regular file ";
+			}
+		}
+
+		fs::ofstream ostream{path, std::ios_base::app | std::ios_base::out};
 		fs::ifstream istream{path};
 
 		if (ostream.fail() ||
@@ -137,11 +161,19 @@ void Trash::abort(const std::string& file, const char* msg)
 	report(file, msg);
 	exit(status);
 }
+void Trash::abort(const fs::path& file, const char* msg)
+{
+	abort(file.string(), msg);
+}
 
 void Trash::report(const std::string& file, const char* msg)
 {
 	report_basic(std::string("cannot remove ‘") + file
 			+ "’: " + msg);
+}
+void Trash::report(const fs::path& file, const char* msg)
+{
+	report(file.string(), msg);
 }
 
 void Trash::report_basic(const std::string& msg)
