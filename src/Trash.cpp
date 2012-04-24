@@ -203,7 +203,12 @@ void Trash::parse_config(int argc, const char** argv)
 	if (fs::exists(config_file) && fs::is_regular_file(config_file))
 	{
 		options.store_config(config_file.string());
-		options.notify();
 	}
+	config_file = "/etc/trashrc";
+	if (fs::exists(config_file) && fs::is_regular_file(config_file))
+	{
+		options.store_config(config_file.string());
+	}
+	options.notify();
 }
 
