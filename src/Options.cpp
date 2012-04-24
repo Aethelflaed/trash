@@ -5,6 +5,7 @@
 #include <string>
 #include <fstream>
 #include <boost/bind.hpp>
+#include <boost/algorithm/string/replace.hpp>
 
 Options::Options() noexcept
 {
@@ -228,6 +229,14 @@ const std::string& Options::getTrashCan() const noexcept
 Options& Options::setTrashCan(const std::string& trash_can) noexcept
 {
 	this->trash_can = trash_can;
+	if (this->getHome().empty() == false)
+	{
+		boost::algorithm::ireplace_all(this->trash_can, "$HOME", getHome());
+	}
+	if (this->getUser().empty() == false)
+	{
+		boost::algorithm::ireplace_all(this->trash_can, "$USER", getUser());
+	}
 	return *this;
 }
 
@@ -300,7 +309,6 @@ void Options::initialize_options() noexcept
 		;
 
 	hidden.add_options()
-		//("input-file", po::value<std::vector<std::string>>(), "input file")
 		("input-file", po::value<std::vector<std::string>>()->notifier(boost::bind(&Options::setInputFiles, this, _1)), "input file")
 		;
 
