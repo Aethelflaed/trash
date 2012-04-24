@@ -55,7 +55,7 @@ int Trash::run()
 	return status;
 }
 
-void Trash::remove_file(fs::path& path)
+void Trash::remove_file(const fs::path& path)
 {
 	if (path.empty() || this->prompt(path) == false)
 	{
@@ -74,11 +74,16 @@ void Trash::remove_file(fs::path& path)
 	}
 }
 
-void Trash::remove_directory(fs::path& path)
+void Trash::remove_directory(const fs::path& path)
 {
+	fs::directory_iterator end;
+	for (fs::directory_iterator it(path); it != end; it++)
+	{
+		this->remove_file(it->path());
+	}
 }
 
-bool Trash::prompt(fs::path& path)
+bool Trash::prompt(const fs::path& path)
 {
 	if (options.isForce() == false ||
 		options.getInteractive() == Options::Interactive::always)

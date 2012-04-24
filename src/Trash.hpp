@@ -15,10 +15,10 @@ public:
 	int run();
 
 private:
-	void remove_file(fs::path& path);
-	void remove_directory(fs::path& path);
+	void remove_file(const fs::path& path);
+	void remove_directory(const fs::path& path);
 
-	bool prompt(fs::path& path);
+	bool prompt(const fs::path& path);
 	bool ask(const std::string& msg);
 	bool affirmative(const std::string& response);
 
