@@ -1,6 +1,8 @@
 #include "Trash.hpp"
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem/fstream.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <sstream>
 #include <unistd.h>
 
 Trash::Trash(int argc, const char** argv) noexcept
@@ -81,13 +83,7 @@ void Trash::remove_file(const fs::path& path)
 	}
 	else
 	{
-		fs::path newPath{options.getTrashCan() + fs::absolute(path).string()};
-		fs::create_directories(newPath.parent_path());
-		fs::rename(path, newPath);
-		if (options.isVerbose())
-		{
-			message(std::string("moved to trash can: ‘") + path.string() + "’\n");
-		}
+		this->move_file(path);
 	}
 }
 
@@ -98,6 +94,49 @@ void Trash::remove_directory(const fs::path& path)
 	{
 		this->remove_file(it->path());
 	}
+}
+
+void Trash::move_file(const fs::path& path)
+{
+	std::ostringstream oss;
+	oss << options.getTrashCan();
+	oss << '/' << path.string();
+	fs::path newPath{oss.str()};
+
+	if (fs::exists(newPath))
+	{
+		oss << ' ' << getTime();
+		newPath = oss.str();
+	}
+
+	int i = 0;
+	oss << " - ";
+	std::string pathname = oss.str();
+	while (fs::exists(newPath))
+	{
+		oss.str("");
+		oss << pathname << i++;
+		newPath = fs::path{oss.str()};
+	}
+
+	fs::create_directories(newPath.parent_path());
+	fs::rename(path, newPath);
+	if (options.isVerbose())
+	{
+		message(std::string("moved to trash can: ‘") + path.string() + "’\n");
+	}
+}
+
+namespace pt = ::boost::posix_time;
+
+std::string Trash::getTime()
+{
+	std::ostringstream oss;
+	const pt::ptime now = pt::second_clock::local_time();
+	pt::time_facet*const f = new pt::time_facet("%Y-%m-%d %H:%M:%S");
+	oss.imbue(std::locale(oss.getloc(), f));
+	oss << now;
+	return oss.str();
 }
 
 bool Trash::prompt(const fs::path& path)

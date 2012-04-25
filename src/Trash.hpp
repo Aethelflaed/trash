@@ -18,6 +18,10 @@ private:
 	void remove_file(const fs::path& path);
 	void remove_directory(const fs::path& path);
 
+	void move_file(const fs::path& path);
+
+	std::string getTime();
+
 	bool prompt(const fs::path& path);
 	bool ask(const std::string& msg);
 	bool affirmative(const std::string& response);
