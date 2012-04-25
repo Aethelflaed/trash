@@ -98,25 +98,19 @@ void Trash::remove_directory(const fs::path& path)
 
 void Trash::move_file(const fs::path& path)
 {
+	std::string trash_can{options.getTrashCan() + '/'};
 	std::ostringstream oss;
-	oss << options.getTrashCan();
-	oss << '/' << path.string();
-	fs::path newPath{oss.str()};
-
-	if (fs::exists(newPath))
-	{
-		oss << ' ' << getTime();
-		newPath = oss.str();
-	}
+	oss << path.string() << ' ';
+	oss << getTime() << " - ";
+	std::string pathname = oss.str();
 
 	int i = 0;
-	oss << " - ";
-	std::string pathname = oss.str();
+	fs::path newPath;
 	while (fs::exists(newPath))
 	{
 		oss.str("");
 		oss << pathname << i++;
-		newPath = fs::path{oss.str()};
+		newPath = fs::path{trash_can + oss.str()};
 	}
 
 	fs::create_directories(newPath.parent_path());
