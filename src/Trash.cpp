@@ -69,17 +69,7 @@ void Trash::remove_file(const fs::path& path)
 	}
 	else if (options.isUnlink())
 	{
-		if (fs::remove(path))
-		{
-			if (options.isVerbose())
-			{
-				message(std::string("removed ‘") + path.string() + "’\n");
-			}
-		}
-		else
-		{
-			report(path, "Permission denied");
-		}
+		this->delete_file(path);
 	}
 	else
 	{
@@ -93,6 +83,21 @@ void Trash::remove_directory(const fs::path& path)
 	for (fs::directory_iterator it(path); it != end; it++)
 	{
 		this->remove_file(it->path());
+	}
+}
+
+void Trash::delete_file(const fs::path& path)
+{
+	if (fs::remove(path))
+	{
+		if (options.isVerbose())
+		{
+			message(std::string("removed ‘") + path.string() + "’\n");
+		}
+	}
+	else
+	{
+		report(path, "Permission denied");
 	}
 }
 

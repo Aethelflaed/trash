@@ -18,6 +18,7 @@ private:
 	void remove_file(const fs::path& path);
 	void remove_directory(const fs::path& path);
 
+	void delete_file(const fs::path& path);
 	void move_file(const fs::path& path);
 	void write_properties(const fs::path& path, const std::string& property_file);
 
