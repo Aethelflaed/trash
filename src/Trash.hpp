@@ -19,6 +19,7 @@ private:
 	void remove_directory(const fs::path& path);
 
 	void move_file(const fs::path& path);
+	void write_properties(const fs::path& path, const std::string& property_file);
 
 	std::string getTime();
 

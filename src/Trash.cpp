@@ -106,12 +106,12 @@ void Trash::move_file(const fs::path& path)
 
 	int i = 0;
 	fs::path newPath;
-	while (fs::exists(newPath))
+	do
 	{
 		oss.str("");
 		oss << pathname << i++;
 		newPath = fs::path{trash_can + oss.str()};
-	}
+	} while (fs::exists(newPath));
 
 	fs::create_directories(newPath.parent_path());
 	fs::rename(path, newPath);
@@ -119,6 +119,15 @@ void Trash::move_file(const fs::path& path)
 	{
 		message(std::string("moved to trash can: ‘") + path.string() + "’\n");
 	}
+	this->write_properties(path, trash_can + '.' + oss.str());
+}
+
+void Trash::write_properties(const fs::path& path, const std::string& property_file)
+{
+	fs::path file{property_file};
+	fs::ofstream stream{file};
+
+	stream << fs::absolute(path).string() << std::endl;
 }
 
 namespace pt = ::boost::posix_time;
