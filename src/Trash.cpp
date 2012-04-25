@@ -67,9 +67,26 @@ void Trash::remove_file(const fs::path& path)
 	}
 	else if (options.isUnlink())
 	{
-		if (fs::remove(path) == false)
+		if (fs::remove(path))
+		{
+			if (options.isVerbose())
+			{
+				message(std::string("removed ‘") + path.string() + "’\n");
+			}
+		}
+		else
 		{
 			report(path, "Permission denied");
+		}
+	}
+	else
+	{
+		fs::path newPath{options.getTrashCan() + fs::absolute(path).string()};
+		fs::create_directories(newPath.parent_path());
+		fs::rename(path, newPath);
+		if (options.isVerbose())
+		{
+			message(std::string("moved to trash can: ‘") + path.string() + "’\n");
 		}
 	}
 }
