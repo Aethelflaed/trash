@@ -255,6 +255,10 @@ const std::string& Options::getHome() const noexcept
 }
 void Options::setHome(const std::string& home) noexcept
 {
+	if (home.empty() == false && xdgDataHome.empty())
+	{
+		setXdgDatahome(home + ".local/share");
+	}
 	this->home = home;
 }
 
@@ -273,6 +277,10 @@ const std::string& Options::getXdgDtaHome() const noexcept
 }
 void Options::setXdgDatahome(const std::string xdgDataHome) noexcept
 {
+	if (xdgDataHome.empty() && home.empty() == false)
+	{
+		xdgDataHome = home + ".local/share";
+	}
 	this->xdgDataHome = xdgDataHome;
 }
 
