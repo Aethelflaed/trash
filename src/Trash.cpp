@@ -21,7 +21,6 @@ Trash::Trash(int argc, const char** argv) noexcept
 		options.setTrashCan(trash_can);
 		if (fs::exists(trash_can) == false)
 		{
-			message("setting default trash can to ‘" + trash_can + "’\n");
 			if (fs::create_directory(trash_can) == false)
 			{
 				abort("failed to create default trash can");
