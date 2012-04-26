@@ -267,6 +267,15 @@ void Options::setUser(const std::string& user) noexcept
 	this->user = user;
 }
 
+const std::string& Options::getXdgDtaHome() const noexcept
+{
+	return xdgDataHome;
+}
+void Options::setXdgDatahome(const std::string xdgDataHome) noexcept
+{
+	this->xdgDataHome = xdgDataHome;
+}
+
 const std::string& Options::getProgramName() const noexcept
 {
 	return program_name;
@@ -321,6 +330,7 @@ void Options::initialize_options() noexcept
 	env_options.add_options()
 		("home", po::value<std::string>()->notifier(boost::bind(&Options::setHome, this, _1)), "")
 		("user", po::value<std::string>()->notifier(boost::bind(&Options::setUser, this, _1)), "")
+		("xdp-data-home", po::value<std::string>()->notifier(boost::bind(&Options::setXdgDatahome, this, _1)), "")
 		;
 }
 
@@ -343,6 +353,10 @@ std::string Options::parse_env(const std::string& variable)
 	else if (variable == "HOME")
 	{
 		return "home";
+	}
+	else if (variable == "XDG_DATA_HOME")
+	{
+		return "xdg-data-home";
 	}
 	return "";
 }

@@ -75,6 +75,10 @@ public:
 private:
 	void setUser(const std::string& user) noexcept;
 
+public:
+	const std::string& getXdgDtaHome() const noexcept;
+private:
+	void setXdgDatahome(const std::string xdgDataHome) noexcept;
 
 public:
 	const std::string& getProgramName() const noexcept;
@@ -109,6 +113,7 @@ private:
 	std::vector<std::string> input_files;
 	std::string home;
 	std::string user;
+	std::string xdgDataHome;
 
 	po::variables_map vm;
 
