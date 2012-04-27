@@ -222,22 +222,9 @@ void Options::setInteractiveAlways(bool value) noexcept
 	}
 }
 
-const std::string& Options::getTrashCan() const noexcept
+User& Options::getUser() noexcept
 {
-	return trash_can;
-}
-Options& Options::setTrashCan(const std::string& trash_can) noexcept
-{
-	this->trash_can = trash_can;
-	if (this->getHome().empty() == false)
-	{
-		boost::algorithm::ireplace_all(this->trash_can, "$HOME", getHome());
-	}
-	if (this->getUser().empty() == false)
-	{
-		boost::algorithm::ireplace_all(this->trash_can, "$USER", getUser());
-	}
-	return *this;
+	return user;
 }
 
 const std::vector<std::string>& Options::getInputFiles() const noexcept
@@ -249,39 +236,17 @@ void Options::setInputFiles(const std::vector<std::string>& input_files) noexcep
 	this->input_files = input_files;
 }
 
-const std::string& Options::getHome() const noexcept
+void Options::setHome(std::string home) noexcept
 {
-	return home;
+	this->user.setHome(home);
 }
-void Options::setHome(const std::string& home) noexcept
+void Options::setUser(std::string user) noexcept
 {
-	if (home.empty() == false && xdgDataHome.empty())
-	{
-		setXdgDatahome(home + ".local/share");
-	}
-	this->home = home;
+	this->user.setName(user);
 }
-
-const std::string& Options::getUser() const noexcept
+void Options::setXdgDatahome(std::string XDG_DATA_HOME) noexcept
 {
-	return user;
-}
-void Options::setUser(const std::string& user) noexcept
-{
-	this->user = user;
-}
-
-const std::string& Options::getXdgDtaHome() const noexcept
-{
-	return xdgDataHome;
-}
-void Options::setXdgDatahome(const std::string xdgDataHome) noexcept
-{
-	if (xdgDataHome.empty() && home.empty() == false)
-	{
-		xdgDataHome = home + ".local/share";
-	}
-	this->xdgDataHome = xdgDataHome;
+	this->user.setXDG_DATA_HOME(XDG_DATA_HOME);
 }
 
 const std::string& Options::getProgramName() const noexcept
@@ -321,7 +286,6 @@ void Options::initialize_options() noexcept
 		;
 
 	trash_options.add_options()
-		("trash,t", po::value<std::string>()->notifier(boost::bind(&Options::setTrashCan, this, _1)), "specify trash can location")
 		("unlink,u", make_bool_switch(&Options::setUnlink), "unlink (delete) files directly (as rm)")
 		;
 
@@ -338,7 +302,7 @@ void Options::initialize_options() noexcept
 	env_options.add_options()
 		("home", po::value<std::string>()->notifier(boost::bind(&Options::setHome, this, _1)), "")
 		("user", po::value<std::string>()->notifier(boost::bind(&Options::setUser, this, _1)), "")
-		("xdp-data-home", po::value<std::string>()->notifier(boost::bind(&Options::setXdgDatahome, this, _1)), "")
+		("xdg-data-home", po::value<std::string>()->notifier(boost::bind(&Options::setXdgDatahome, this, _1)), "")
 		;
 }
 

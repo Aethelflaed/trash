@@ -3,6 +3,7 @@
 
 #include <boost/program_options.hpp>
 #include <iostream>
+#include "User.hpp"
 
 namespace po = ::boost::program_options;
 
@@ -58,27 +59,11 @@ private:
 	void setInteractiveAlways(bool value) noexcept;
 
 public:
-	const std::string& getTrashCan() const noexcept;
-	Options& setTrashCan(const std::string& trash_can) noexcept;
+	User& getUser() noexcept;
 
 	const std::vector<std::string>& getInputFiles() const noexcept;
 private:
 	void setInputFiles(const std::vector<std::string>& input_files) noexcept;
-
-public:
-	const std::string& getHome() const noexcept;
-private:
-	void setHome(const std::string& home) noexcept;
-
-public:
-	const std::string& getUser() const noexcept;
-private:
-	void setUser(const std::string& user) noexcept;
-
-public:
-	const std::string& getXdgDtaHome() const noexcept;
-private:
-	void setXdgDatahome(const std::string xdgDataHome) noexcept;
 
 public:
 	const std::string& getProgramName() const noexcept;
@@ -90,6 +75,10 @@ public:
 		always,
 	};
 private:
+	void setHome(std::string home) noexcept;
+	void setUser(std::string user) noexcept;
+	void setXdgDatahome(std::string XDG_DATA_HOME) noexcept;
+
 	void abort(const char* msg);
 	void abort(const std::string& msg);
 
@@ -109,11 +98,9 @@ private:
 	bool one_file_system{false};
 	bool unlink{false};
 	Interactive interactive{Interactive::never};
-	std::string trash_can;
 	std::vector<std::string> input_files;
-	std::string home;
-	std::string user;
-	std::string xdgDataHome;
+
+	User user{};
 
 	po::variables_map vm;
 

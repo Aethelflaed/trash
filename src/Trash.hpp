@@ -42,6 +42,7 @@ private:
 	void parse_config(int argc, const char** argv);
 
 	Options options{};
+	std::string trash_can{};
 	int status{0};
 };
 

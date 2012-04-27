@@ -13,15 +13,12 @@ Trash::Trash(int argc, const char** argv) noexcept
 	{
 		options.setForce(true);
 	}
-	if ((options.getTrashCan().empty() ||
-		fs::exists(options.getTrashCan()) == false) &&
-		options.isUnlink() == false)
+	if (options.isUnlink() == false)
 	{
-		std::string trash_can{options.getHome() + "/.trash"};
-		options.setTrashCan(trash_can);
+		trash_can = options.getUser().getXDG_DATA_HOME() + "/Trash";
 		if (fs::exists(trash_can) == false)
 		{
-			if (fs::create_directory(trash_can) == false)
+			if (fs::create_directories(trash_can) == false)
 			{
 				abort("failed to create default trash can");
 			}
@@ -102,7 +99,7 @@ void Trash::delete_file(const fs::path& path)
 
 void Trash::move_file(const fs::path& path)
 {
-	std::string trash_can{options.getTrashCan() + '/'};
+	std::string trash_can{this->trash_can + '/'};
 	std::ostringstream oss;
 	oss << path.string() << ' ';
 	oss << getTime() << " - ";
@@ -287,7 +284,7 @@ void Trash::parse_config(int argc, const char** argv)
 	options.store_cli(argc, argv);
 	options.notify();
 
-	fs::path config_file{options.getHome() + "/.trashrc"};
+	fs::path config_file{options.getUser().getHome() + "/.trashrc"};
 	if (fs::exists(config_file) && fs::is_regular_file(config_file))
 	{
 		options.store_config(config_file.string());
