@@ -1,6 +1,6 @@
 #include "Trashcan.hpp"
 
-std::unordered_set<Trashcan> Trashcan::trashcans;
+std::vector<Trashcan> Trashcan::trashcans;
 
 /**
  * Get the trashcan responsible for forFile, for the specified user.

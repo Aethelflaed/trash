@@ -2,7 +2,7 @@
 #define TRASH_TRASHCAN_HPP
 
 #include <boost/filesystem.hpp>
-#include <unordered_set>
+#include <vector>
 #include <string>
 #include "User.hpp"
 
@@ -21,7 +21,7 @@ public:
 private:
 	Trashcan(fs::path path, bool fs_trash = true);
 
-	static std::unordered_set<Trashcan> trashcans;
+	static std::vector<Trashcan> trashcans;
 
 	fs::path path;
 };
