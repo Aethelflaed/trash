@@ -2,12 +2,27 @@
 #include <string>
 #include <vector>
 #include <utility>
-#include <string>
 #include <fstream>
 #include <boost/bind.hpp>
 #include <boost/algorithm/string/replace.hpp>
 
 Options::Options() noexcept
+	:program_name{"trash"},
+	 copyright{"Written by Geoffroy Planquart <geoffroy@aethelflaed.com>"},
+	 force{false},
+	 verbose{false},
+	 recursive{false},
+	 preserve_root{true},
+	 one_file_system{false},
+	 unlink{false},
+	 interactive{Interactive::never},
+	 generic{"Generic options"},
+	 trash_options{"Trash options"},
+	 config{"Configuration"},
+	 cli_options{"."},
+	 config_options{"."},
+	 visible_options{"Allowed options"},
+	 env_options{"."}
 {
 	initialize_options();
 }

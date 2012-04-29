@@ -34,7 +34,9 @@ bool Trashcan::isInHome(const fs::path& file, const User& user)
 	return true;
 }
 
-Trashcan& Trashcan::getTrashcanInDirectory(fs::path directory_path, const User& user, bool fs_trash)
+Trashcan& Trashcan::getTrashcanInDirectory(fs::path directory_path,
+		const User& user,
+		bool fs_trash)
 {
 	auto it = std::find(trashcans.begin(), trashcans.end(), directory_path);
 	if (it == trashcans.end())
@@ -83,6 +85,9 @@ void Trashcan::setTrashcanInTopDirectory(const fs::path& path, bool dotTrash)
 		if (fs::exists(this->path) == false)
 		{
 			setTrashcanInTopDirectory(path, false);
+		}
+		else
+		{
 		}
 	}
 	else

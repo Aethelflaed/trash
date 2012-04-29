@@ -3,6 +3,7 @@
 
 #include <boost/program_options.hpp>
 #include <iostream>
+#include <string>
 #include "User.hpp"
 
 namespace po = ::boost::program_options;
@@ -88,32 +89,32 @@ private:
 
 	std::string parse_env(const std::string& variable);
 
-	std::string program_name{"trash"};
-	std::string copyright{"Written by Geoffroy Planquart <geoffroy@aethelflaed.com>"};
+	std::string program_name;
+	std::string copyright;
 
-	bool force{false};
-	bool verbose{false};
-	bool recursive{false};
-	bool preserve_root{false};
-	bool one_file_system{false};
-	bool unlink{false};
-	Interactive interactive{Interactive::never};
+	bool force;
+	bool verbose;
+	bool recursive;
+	bool preserve_root;
+	bool one_file_system;
+	bool unlink;
+	Interactive interactive;
 	std::vector<std::string> input_files;
 
-	User user{};
+	User user;
 
 	po::variables_map vm;
 
-	po::options_description generic{"Generic options"};
-	po::options_description trash_options{"Trash options"};
-	po::options_description config{"Configuration"};
-	po::options_description hidden{"Hidden options"};
+	po::options_description generic;
+	po::options_description trash_options;
+	po::options_description config;
+	po::options_description hidden;
 	po::positional_options_description positional;
 
-	po::options_description cli_options{"."};
-	po::options_description config_options{"."};
-	po::options_description visible_options{"Allowed options"};
-	po::options_description env_options{"."};
+	po::options_description cli_options;
+	po::options_description config_options;
+	po::options_description visible_options;
+	po::options_description env_options;
 };
 
 #endif /* TRASH_OPTIONS_HPP */

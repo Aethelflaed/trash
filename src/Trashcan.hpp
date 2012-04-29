@@ -23,7 +23,9 @@ public:
 	void put(const fs::path& path);
 private:
 	static bool isInHome(const fs::path& file, const User& user);
-	static Trashcan& getTrashcanInDirectory(fs::path directory_path, const User& user, bool fs_trash = true);
+	static Trashcan& getTrashcanInDirectory(fs::path directory_path,
+			const User& user,
+			bool fs_trash = true);
 
 	Trashcan(fs::path path, const User& user, bool fs_trash = true);
 	void setTrashcanInTopDirectory(const fs::path& path, bool dotTrash = true);

@@ -41,8 +41,9 @@ private:
 
 	void parse_config(int argc, const char** argv);
 
-	Options options{};
-	int status{0};
+	Options options;
+	std::string trash_can;
+	int status;
 };
 
 #endif /* TRASH_TRASH_HPP */
