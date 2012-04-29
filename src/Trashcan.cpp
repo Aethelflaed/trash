@@ -14,7 +14,7 @@ Trashcan& Trashcan::getTrashcan(fs::path forFile, const User& user)
 	forFile = fs::absolute(std::move(forFile));
 	if (isInHome(forFile, user))
 	{
-		return getTrashcanInDirectory(user.getXDG_DATA_HOME(), user, false);
+		return getTrashcanInDirectory(user.getHome(), user, false);
 	}
 	return getTrashcanInDirectory(cppmounts::for_path(forFile.string())->getPath(), user);
 }
@@ -60,7 +60,7 @@ Trashcan::Trashcan(fs::path path, const User& user, bool fs_trash)
 {
 	if (fs_trash == false)
 	{
-		this->path = path / "Trash";
+		this->path = fs::path{user.getXDG_DATA_HOME()} / "Trash";
 		this->createDirectory();
 	}
 	else
