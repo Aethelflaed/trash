@@ -20,6 +20,7 @@ public:
 	operator const std::string&();
 	bool operator==(const fs::path& directory_path);
 
+	void put(const fs::path& path);
 private:
 	static bool isInHome(const fs::path& file, const User& user);
 	static Trashcan& getTrashcanInDirectory(fs::path directory_path, const User& user, bool fs_trash = true);
@@ -27,6 +28,7 @@ private:
 	Trashcan(fs::path path, const User& user, bool fs_trash = true);
 	void setTrashcanInTopDirectory(const fs::path& path, bool dotTrash = true);
 	void createDirectory();
+	void createDirectory(const fs::path& path);
 
 	static std::vector<Trashcan> trashcans;
 

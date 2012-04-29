@@ -68,12 +68,8 @@ Trashcan::Trashcan(fs::path path, const User& user, bool fs_trash)
 		setTrashcanInTopDirectory(std::move(path));
 	}
 
-	if (fs::is_directory(this->path) == false)
-	{
-		std::ostringstream oss;
-		oss << "Trash " << this->path << " is not a directory";
-		throw std::runtime_error{oss.str()};
-	}
+	createDirectory(this->path / "files");
+	createDirectory(this->path / "info");
 }
 
 void Trashcan::setTrashcanInTopDirectory(const fs::path& path, bool dotTrash)
@@ -99,17 +95,31 @@ void Trashcan::setTrashcanInTopDirectory(const fs::path& path, bool dotTrash)
 
 void Trashcan::createDirectory()
 {
+	createDirectory(this->path);
+}
+void Trashcan::createDirectory(const fs::path& path)
+{
 	boost::system::error_code ec;
-	if (fs::exists(this->path) == false)
+	if (fs::exists(path) == false)
 	{
-		fs::create_directories(this->path, ec);
+		fs::create_directories(path, ec);
 		if (!!ec)
 		{
 			std::ostringstream oss;
-			oss << "Cannot create directory " << this->path;
+			oss << "Cannot create directory " << path;
 			throw std::runtime_error{oss.str()};
 		}
 	}
+	if (fs::is_directory(path) == false)
+	{
+		std::ostringstream oss;
+		oss << "File " << path << " is not a directory";
+		throw std::runtime_error{oss.str()};
+	}
+}
+
+void Trashcan::put(const fs::path& path)
+{
 }
 
 bool Trashcan::operator==(const fs::path& directory_path)
