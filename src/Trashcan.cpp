@@ -14,7 +14,7 @@ const Trashcan& Trashcan::getTrashcan(fs::path forFile, const User& user)
 	forFile = fs::absolute(std::move(forFile));
 	if (isInHome(forFile, user))
 	{
-		return getTrashcanInDirectory(user.getHome(), user, false);
+		return getTrashcanInDirectory(user.getXDG_DATA_HOME(), user, false);
 	}
 	return getTrashcanInDirectory(cppmounts::for_path(forFile.string())->getPath(), user);
 }
