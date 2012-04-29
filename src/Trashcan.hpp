@@ -12,7 +12,7 @@ namespace fs = ::boost::filesystem;
 class Trashcan
 {
 public:
-	static const Trashcan& getTrashcan(fs::path forFile, const User& user);
+	static Trashcan& getTrashcan(fs::path forFile, const User& user);
 
 	const fs::path& getPath() const noexcept;
 

@@ -9,7 +9,7 @@ std::vector<Trashcan> Trashcan::trashcans;
 /**
  * Get the trashcan responsible for forFile, for the specified user.
  */
-const Trashcan& Trashcan::getTrashcan(fs::path forFile, const User& user)
+Trashcan& Trashcan::getTrashcan(fs::path forFile, const User& user)
 {
 	forFile = fs::absolute(std::move(forFile));
 	if (isInHome(forFile, user))
