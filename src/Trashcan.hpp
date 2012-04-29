@@ -18,17 +18,20 @@ public:
 
 	operator const fs::path&();
 	operator const std::string&();
-	bool operator==(const fs::path& path);
+	bool operator==(const fs::path& directory_path);
 
 private:
 	static bool isInHome(const fs::path& file, const User& user);
 	static Trashcan& getTrashcanInDirectory(fs::path directory_path, const User& user, bool fs_trash = true);
 
 	Trashcan(fs::path path, const User& user, bool fs_trash = true);
+	void setTrashcanInTopDirectory(const fs::path& path, bool dotTrash = true);
+	void createDirectory();
 
 	static std::vector<Trashcan> trashcans;
 
 	fs::path path;
+	fs::path directory;
 	uid_t uid;
 	bool fs_trash;
 };
