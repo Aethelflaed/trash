@@ -61,6 +61,7 @@ Trashcan::Trashcan(fs::path path, const User& user, bool fs_trash)
 	if (fs_trash == false)
 	{
 		this->path = path / "Trash";
+		this->createDirectory();
 	}
 	else
 	{
@@ -105,7 +106,7 @@ void Trashcan::createDirectory()
 		if (!!ec)
 		{
 			std::ostringstream oss;
-			oss << "Can't create directory " << this->path;
+			oss << "Cannot create directory " << this->path;
 			throw std::runtime_error{oss.str()};
 		}
 	}
