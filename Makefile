@@ -3,14 +3,16 @@ include Makefile.conf
 srcdir := src
 bindir := bin
 libdir := lib
-objdir := build
+objdir := obj
 incdir := include
 
-srcdir += $(addprefix $(srcdir)/, $(modules))
-objdir += $(addprefix $(objdir)/, $(modules))
+srcsdir := $(srcdir)
+srcsdir += $(addprefix $(srcdir)/, $(modules))
+objsdir := $(objdir)
+objsdir += $(addprefix $(objdir)/, $(modules))
 
-srcs := $(foreach sdir, $(srcdir), $(wildcard $(sdir)/*.cpp))
-objs := $(patsubst $(srcdir)/%.cpp, $(objdir)/%.o, $(foreach odir, $(objdir), $(wildcard $(odir)/*.cpp)))
+srcs := $(foreach sdir, $(srcsdir), $(wildcard $(sdir)/*.cpp))
+objs := $(patsubst $(srcdir)/%.cpp, $(objdir)/%.o, $(foreach sdir, $(srcsdir), $(wildcard $(sdir)/*.cpp)))
 
 localdirs :=\
 	$(objdir)\
@@ -18,20 +20,22 @@ localdirs :=\
 	$(libdir)\
 	$(incdir)
 
-vpath %.cpp $(srcdir)
+vpath %.cpp $(srcsdir)
 
-define make-objs-goal:
+define make-objs-goal
 $1/%.o: %.cpp
 	$(CPP) -c $$< -o $$@ $(CPPFLAGS) $(INCLUDES)
 endef
 
-program=$(build_bindir)/$(program_name)
+program=$(bindir)/$(program_name)
 
-all: $(localdirs) $(program)
+all: debug $(localdirs) $(program)
+
+debug:
 
 clean:
-	$(RM) build
-	$(RM) bin
+	$(RM) -r $(objdir)
+	$(RM) -r $(bindir)
 
 $(program): $(objs)
 	$(LD) $(LDFLAGS) $(LIBS) $^ -o $@
@@ -40,4 +44,5 @@ $(program): $(objs)
 $(localdirs):
 	mkdir -p $@
 
-$(foreach odir, $(objdir), $(eval $(call make-objs-goal, $(odir))))
+$(foreach odir, $(objsdir), $(eval $(call make-objs-goal, $(odir))))
+
