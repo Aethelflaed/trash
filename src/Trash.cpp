@@ -13,17 +13,6 @@ Trash::Trash(int argc, const char** argv) noexcept
 	{
 		options.setForce(true);
 	}
-	if (options.isUnlink() == false)
-	{
-		trash_can = options.getUser().getXDG_DATA_HOME() + "/Trash";
-		if (fs::exists(trash_can) == false)
-		{
-			if (fs::create_directories(trash_can) == false)
-			{
-				abort("failed to create default trash can");
-			}
-		}
-	}
 }
 
 int Trash::run()
@@ -99,36 +88,7 @@ void Trash::delete_file(const fs::path& path)
 
 void Trash::move_file(const fs::path& path)
 {
-	std::string trash_can{this->trash_can + '/'};
-	std::ostringstream oss;
-	oss << path.string() << ' ';
-	oss << getTime() << " - ";
-	std::string pathname = oss.str();
-
-	int i = 0;
-	fs::path newPath;
-	do
-	{
-		oss.str("");
-		oss << pathname << i++;
-		newPath = fs::path{trash_can + oss.str()};
-	} while (fs::exists(newPath));
-
-	fs::create_directories(newPath.parent_path());
-	fs::rename(path, newPath);
-	if (options.isVerbose())
-	{
-		message(std::string("moved to trash can: ‘") + path.string() + "’\n");
-	}
-	this->write_properties(path, trash_can + '.' + oss.str());
-}
-
-void Trash::write_properties(const fs::path& path, const std::string& property_file)
-{
-	fs::path file{property_file};
-	fs::ofstream stream{file};
-
-	stream << fs::absolute(path).string() << std::endl;
+	Trashcan::getTrashcan(path, options.getUser()).put(path);
 }
 
 namespace pt = ::boost::posix_time;

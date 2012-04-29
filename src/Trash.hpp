@@ -4,6 +4,7 @@
 #include "Options.hpp"
 #include <boost/filesystem.hpp>
 #include <iostream>
+#include "Trashcan.hpp"
 
 namespace fs = ::boost::filesystem;
 
@@ -20,7 +21,6 @@ private:
 
 	void delete_file(const fs::path& path);
 	void move_file(const fs::path& path);
-	void write_properties(const fs::path& path, const std::string& property_file);
 
 	std::string getTime();
 
@@ -42,7 +42,6 @@ private:
 	void parse_config(int argc, const char** argv);
 
 	Options options{};
-	std::string trash_can{};
 	int status{0};
 };
 
