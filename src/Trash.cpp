@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 Trash::Trash(int argc, const char** argv) noexcept
+	:status{0}
 {
 	parse_config(argc, argv);
 

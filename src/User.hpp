@@ -1,7 +1,6 @@
 #ifndef TRASH_USER_HPP
 #define TRASH_USER_HPP
 
-#include <unistd.h>
 #include <sys/types.h>
 #include <string>
 
@@ -26,8 +25,8 @@ private:
 	std::string home;
 	std::string XDG_DATA_HOME;
 
-	uid_t uid{geteuid()};
-	gid_t gid{getegid()};
+	uid_t uid;
+	gid_t gid;
 };
 
 #endif /* TRASH_USER_HPP */
