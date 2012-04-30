@@ -35,6 +35,7 @@ list_objsdir := $(list_objdir)
 list_objsdir += $(addprefix $(list_objdir)/, $(list_modules))
 
 lib_srcs := $(foreach sdir, $(lib_srcsdir), $(wildcard $(sdir)/*.cpp))
+lib_headers := $(patsubst $(lib_srcdir)/%.hpp, $(incdir)/%.hpp, $(foreach sdir, $(lib_srcsdir), $(wildcard $(sdir)/*.hpp)))
 put_srcs := $(foreach sdir, $(put_srcsdir), $(wildcard $(sdir)/*.cpp))
 restore_srcs := $(foreach sdir, $(restore_srcsdir), $(wildcard $(sdir)/*.cpp))
 list_srcs := $(foreach sdir, $(list_srcsdir), $(wildcard $(sdir)/*.cpp))
@@ -67,6 +68,10 @@ define make-app-objs-goal
 $1/%.o: %.cpp
 	$(CPP) -c $$< -o $$@ $(CPPFLAGS) $(APP_INCLUDES)
 endef
+define make-cp-lib-headers-goal
+$2: $1
+	cp $$^ $$@
+endef
 
 target_lib := $(libdir)/lib$(lib_name).so
 target_put := $(bindir)/$(put_name)
@@ -82,12 +87,13 @@ libs :=\
 	$(target_lib)
 
 #all: $(localdirs) $(libs) $(apps)
-all: $(localdirs) $(libs) $(target_put)
+all: $(localdirs) $(libs) $(lib_headers) $(target_put)
 
 clean:
-	$(RM) -r $(objdir)
-	$(RM) -r $(bindir)
-	$(RM) -r $(libdir)
+	$(RM) -r $(objdir)/*
+	$(RM) -r $(bindir)/*
+	$(RM) -r $(libdir)/*
+	$(RM) -r $(incdir)/*
 
 $(target_lib): $(lib_objs)
 	$(LD) $(LIBLDFLAGS) $(LIB_LIBS) $^ -o $@
@@ -108,4 +114,6 @@ $(foreach odir, $(lib_objsdir), $(eval $(call make-lib-objs-goal, $(odir))))
 $(foreach odir, $(put_objsdir), $(eval $(call make-app-objs-goal, $(odir))))
 $(foreach odir, $(restore_objsdir), $(eval $(call make-app-objs-goal, $(odir))))
 $(foreach odir, $(list_objsdir), $(eval $(call make-app-objs-goal, $(odir))))
+
+$(foreach header, $(lib_headers), $(eval $(call make-cp-lib-headers-goal, $(patsubst $(incdir)/%.hpp, $(lib_srcdir)/%.hpp, $(header)), $(header))))
 
