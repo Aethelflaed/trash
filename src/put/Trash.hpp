@@ -4,7 +4,7 @@
 #include "Options.hpp"
 #include <boost/filesystem.hpp>
 #include <iostream>
-#include <Trashcan.hpp>
+#include <can.hpp>
 
 namespace fs = ::boost::filesystem;
 
@@ -38,8 +38,6 @@ private:
 	void report_basic(const std::string& msg);
 	void report_basic(const char* msg);
 	void message(const std::string& msg, std::ostream& stream = std::cout);
-
-	void parse_config(int argc, const char** argv);
 
 	Options options;
 	std::string trash_can;

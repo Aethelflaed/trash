@@ -21,8 +21,7 @@ Options::Options() noexcept
 	 config{"Configuration"},
 	 cli_options{"."},
 	 config_options{"."},
-	 visible_options{"Allowed options"},
-	 env_options{"."}
+	 visible_options{"Allowed options"}
 {
 	initialize_options();
 }
@@ -48,19 +47,6 @@ void Options::store_config(const std::string& filename) noexcept
 	{
 		std::ifstream file(filename);
 		po::store(po::parse_config_file(file, config_options), vm);
-	}
-	catch (const po::error& e)
-	{
-		abort(e.what());
-	}
-}
-
-void Options::store_environment() noexcept
-{
-	try
-	{
-		po::store(po::parse_environment(env_options,
-					boost::bind<std::string>(&Options::parse_env, this, _1)), vm);
 	}
 	catch (const po::error& e)
 	{
@@ -237,11 +223,6 @@ void Options::setInteractiveAlways(bool value) noexcept
 	}
 }
 
-User& Options::getUser() noexcept
-{
-	return user;
-}
-
 const std::vector<std::string>& Options::getInputFiles() const noexcept
 {
 	return input_files;
@@ -249,19 +230,6 @@ const std::vector<std::string>& Options::getInputFiles() const noexcept
 void Options::setInputFiles(const std::vector<std::string>& input_files) noexcept
 {
 	this->input_files = input_files;
-}
-
-void Options::setHome(std::string home) noexcept
-{
-	this->user.setHome(home);
-}
-void Options::setUser(std::string user) noexcept
-{
-	this->user.setName(user);
-}
-void Options::setXdgDatahome(std::string XDG_DATA_HOME) noexcept
-{
-	this->user.setXDG_DATA_HOME(XDG_DATA_HOME);
 }
 
 const std::string& Options::getProgramName() const noexcept
@@ -313,12 +281,6 @@ void Options::initialize_options() noexcept
 	cli_options.add(config).add(trash_options).add(generic).add(hidden);
 	config_options.add(config).add(trash_options).add(hidden);
 	visible_options.add(config).add(trash_options).add(generic);
-
-	env_options.add_options()
-		("home", po::value<std::string>()->notifier(boost::bind(&Options::setHome, this, _1)), "")
-		("user", po::value<std::string>()->notifier(boost::bind(&Options::setUser, this, _1)), "")
-		("xdg-data-home", po::value<std::string>()->notifier(boost::bind(&Options::setXdgDatahome, this, _1)), "")
-		;
 }
 
 po::typed_value<bool>* Options::make_bool_switch(void (Options::*callback)(bool))
@@ -329,22 +291,5 @@ po::typed_value<bool>* Options::make_bool_switch(void (Options::*callback)(bool)
 po::typed_value<bool>* Options::make_bool_switch(Options& (Options::*callback)(bool) noexcept (true))
 {
 	return po::bool_switch()->notifier(boost::bind(callback, this, _1));
-}
-
-std::string Options::parse_env(const std::string& variable)
-{
-	if (variable == "USER")
-	{
-		return "user";
-	}
-	else if (variable == "HOME")
-	{
-		return "home";
-	}
-	else if (variable == "XDG_DATA_HOME")
-	{
-		return "xdg-data-home";
-	}
-	return "";
 }
 

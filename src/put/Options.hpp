@@ -4,7 +4,6 @@
 #include <boost/program_options.hpp>
 #include <iostream>
 #include <string>
-#include <User.hpp>
 
 namespace po = ::boost::program_options;
 
@@ -22,7 +21,6 @@ public:
 
 	void store_cli(int argc, const char** argv) noexcept;
 	void store_config(const std::string& file) noexcept;
-	void store_environment() noexcept;
 	po::variables_map* notify() noexcept;
 
 	friend std::ostream& operator<<(std::ostream& stream, const Options& options);
@@ -60,7 +58,6 @@ private:
 	void setInteractiveAlways(bool value) noexcept;
 
 public:
-	User& getUser() noexcept;
 
 	const std::vector<std::string>& getInputFiles() const noexcept;
 private:
@@ -76,9 +73,6 @@ public:
 		always,
 	};
 private:
-	void setHome(std::string home) noexcept;
-	void setUser(std::string user) noexcept;
-	void setXdgDatahome(std::string XDG_DATA_HOME) noexcept;
 
 	void abort(const char* msg);
 	void abort(const std::string& msg);
@@ -86,8 +80,6 @@ private:
 	void initialize_options() noexcept;
 	po::typed_value<bool>* make_bool_switch(void (Options::*callback)(bool));
 	po::typed_value<bool>* make_bool_switch(Options& (Options::*callback)(bool) noexcept (true));
-
-	std::string parse_env(const std::string& variable);
 
 	std::string program_name;
 	std::string copyright;
@@ -101,8 +93,6 @@ private:
 	Interactive interactive;
 	std::vector<std::string> input_files;
 
-	User user;
-
 	po::variables_map vm;
 
 	po::options_description generic;
@@ -114,7 +104,6 @@ private:
 	po::options_description cli_options;
 	po::options_description config_options;
 	po::options_description visible_options;
-	po::options_description env_options;
 };
 
 #endif /* TRASH_OPTIONS_HPP */

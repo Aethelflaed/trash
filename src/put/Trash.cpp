@@ -5,10 +5,13 @@
 #include <sstream>
 #include <unistd.h>
 
+using namespace ::trash;
+
 Trash::Trash(int argc, const char** argv) noexcept
 	:status{0}
 {
-	parse_config(argc, argv);
+	options.store_cli(argc, argv);
+	options.notify();
 
 	if (isatty(fileno(stdin)) == false)
 	{
@@ -89,7 +92,7 @@ void Trash::delete_file(const fs::path& path)
 
 void Trash::move_file(const fs::path& path)
 {
-	Trashcan::getTrashcan(path, options.getUser()).put(path);
+	can::get_for(path).put(path);
 }
 
 namespace pt = ::boost::posix_time;
@@ -237,24 +240,5 @@ void Trash::message(const std::string& msg, std::ostream& stream)
 {
 	stream << options.getProgramName()
 		<< ": " << msg << std::flush;
-}
-
-void Trash::parse_config(int argc, const char** argv)
-{
-	options.store_environment();
-	options.store_cli(argc, argv);
-	options.notify();
-
-	fs::path config_file{options.getUser().getHome() + "/.trashrc"};
-	if (fs::exists(config_file) && fs::is_regular_file(config_file))
-	{
-		options.store_config(config_file.string());
-	}
-	config_file = "/etc/trashrc";
-	if (fs::exists(config_file) && fs::is_regular_file(config_file))
-	{
-		options.store_config(config_file.string());
-	}
-	options.notify();
 }
 
