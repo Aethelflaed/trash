@@ -1,3 +1,0 @@
-To get mounts:
-	Linux: getmntent
-	Mac: getmntinfo
