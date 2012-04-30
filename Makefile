@@ -60,13 +60,13 @@ vpath %.cpp $(put_srcsdir)
 vpath %.cpp $(restore_srcsdir)
 vpath %.cpp $(list_srcsdir)
 
-define make-lib-objs-goal
-$1/%.o: %.cpp
-	$(CPP) -c $$< -o $$@ $(LIBCPPFLAGS) $(LIB_INCLUDES)
+define make-build-lib-obj-goal
+$2: $1
+	$(CPP) -c $$^ -o $$@ $(LIBCPPFLAGS) $(APP_INCLUDES)
 endef
-define make-app-objs-goal
-$1/%.o: %.cpp
-	$(CPP) -c $$< -o $$@ $(CPPFLAGS) $(APP_INCLUDES)
+define make-build-app-obj-goal
+$2: $1
+	$(CPP) -c $$^ -o $$@ $(CPPFLAGS) $(APP_INCLUDES)
 endef
 define make-cp-lib-headers-goal
 $2: $1
@@ -109,10 +109,9 @@ $(target_list): $(list_objs)
 $(localdirs):
 	mkdir -p $@
 
-$(foreach odir, $(lib_objsdir), $(eval $(call make-lib-objs-goal, $(odir))))
-$(foreach odir, $(put_objsdir), $(eval $(call make-app-objs-goal, $(odir))))
-$(foreach odir, $(restore_objsdir), $(eval $(call make-app-objs-goal, $(odir))))
-$(foreach odir, $(list_objsdir), $(eval $(call make-app-objs-goal, $(odir))))
-
+$(foreach obj, $(lib_objs), $(eval $(call make-build-lib-obj-goal, $(patsubst $(lib_objdir)/%.o, $(lib_srcdir)/%.cpp, $(obj)), $(obj))))
+$(foreach obj, $(put_objs), $(eval $(call make-build-app-obj-goal, $(patsubst $(put_objdir)/%.o, $(put_srcdir)/%.cpp, $(obj)), $(obj))))
+$(foreach obj, $(restore_objs), $(eval $(call make-build-app-obj-goal, $(patsubst $(restore_objdir)/%.o, $(restore_srcdir)/%.cpp, $(obj)), $(obj))))
+$(foreach obj, $(list_objs), $(eval $(call make-build-app-obj-goal, $(patsubst $(list_objdir)/%.o, $(list_srcdir)/%.cpp, $(obj)), $(obj))))
 $(foreach header, $(lib_headers), $(eval $(call make-cp-lib-headers-goal, $(patsubst $(incdir)/%.hpp, $(lib_srcdir)/%.hpp, $(header)), $(header))))
 
