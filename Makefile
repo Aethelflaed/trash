@@ -86,8 +86,7 @@ apps :=\
 libs :=\
 	$(target_lib)
 
-#all: $(localdirs) $(libs) $(apps)
-all: $(localdirs) $(libs) $(lib_headers) $(target_put)
+all: $(localdirs) $(libs) $(lib_headers) $(apps)
 
 clean:
 	$(RM) -r $(objdir)/*
