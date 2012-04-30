@@ -88,6 +88,7 @@ void Trashcan::setTrashcanInTopDirectory(const fs::path& path, bool dotTrash)
 		}
 		else
 		{
+			//TODO check sticky bit and so on
 		}
 	}
 	else
@@ -125,6 +126,8 @@ void Trashcan::createDirectory(const fs::path& path)
 
 void Trashcan::put(const fs::path& path)
 {
+	//TODO info file
+	//then move
 }
 
 bool Trashcan::operator==(const fs::path& directory_path)
