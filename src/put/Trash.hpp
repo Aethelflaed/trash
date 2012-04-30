@@ -4,7 +4,7 @@
 #include "Options.hpp"
 #include <boost/filesystem.hpp>
 #include <iostream>
-#include "Trashcan.hpp"
+#include <Trashcan.hpp>
 
 namespace fs = ::boost::filesystem;
 
