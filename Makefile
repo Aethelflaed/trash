@@ -81,7 +81,8 @@ apps :=\
 libs :=\
 	$(target_lib)
 
-all: $(localdirs) $(libs) $(apps)
+#all: $(localdirs) $(libs) $(apps)
+all: $(localdirs) $(libs) $(target_put)
 
 clean:
 	$(RM) -r $(objdir)
