@@ -1,5 +1,7 @@
 #include "Trash.hpp"
 #include <string.hpp>
+#include <file.hpp>
+#include <user.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -134,67 +136,30 @@ void Trash::check_interactive_once()
 	}
 }
 
-bool Trash::prompt(const fs::path& path)
+bool Trash::prompt(fs::path path)
 {
 	if (this->opts_as<Options>()->isForce() == false ||
 		this->opts_as<Options>()->getInteractive() == Options::Interactive::always)
 	{
-		std::string file_type;
-		if (fs::is_directory(path))
+		trash::file file{std::move(path)};
+
+		std::ostringstream oss;
+		if (file.is_directory() && file.is_empty() == false)
 		{
-			if (fs::is_empty(path))
-			{
-				file_type = "empty ";
-			}
-			file_type += "directory ";
-		}
-		else if (fs::is_regular_file(path))
-		{
-			if (fs::is_empty(path))
-			{
-				file_type = "regular empty file ";
-			}
-			else
-			{
-				file_type = "regular file ";
-			}
-		}
-		else if (fs::is_symlink(path))
-		{
-			file_type = "symbolic link ";
+			oss << "descend into ";
+			if (file.is_writeable_by(user::current()) == false)
+				oss << "write-protected ";
+			oss << file.get_type_as_string();
 		}
 		else
 		{
-			file_type = "file ";
+			oss << "remove ";
+			if (file.is_writeable_by(user::current()) == false)
+				oss << "write-protected ";
+			oss << file.get_type_as_string();
 		}
-		fs::perms permissions = fs::status(path).permissions();
-
-		/*fs::ofstream ostream{path, std::ios_base::app | std::ios_base::out};
-		fs::ifstream istream{path};
-
-		if (ostream.fail() ||
-			this->opts_as<Options>()->getInteractive() == Options::Interactive::always)
-		{
-			std::string msg{"remove "};
-			if (istream.fail() == false)
-			{
-				msg += "write-protected ";
-			}
-			if (fs::is_directory(path))
-			{
-				msg += "directory ";
-			}
-			if (fs::is_regular_file(path))
-			{
-				msg += "regular ";
-				if (fs::file_size(path) == 0)
-					msg += "empty ";
-				msg += "file ";
-			}
-			msg += "‘" + path.native() + "’?";
-			return ask(msg);
-		}
-		*/
+		oss << " ‘" << file.as<std::string>() << "’?";
+		return ask(oss.str());
 	}
 	return true;
 }

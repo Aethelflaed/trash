@@ -34,7 +34,7 @@ private:
 
 	void check_interactive_once();
 
-	bool prompt(const fs::path& path);
+	bool prompt(fs::path path);
 
 	std::string getTime();
 
