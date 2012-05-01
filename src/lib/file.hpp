@@ -17,7 +17,7 @@ namespace trash
 	class file
 	{
 		public:
-			file(const fs::path& path);
+			file(fs::path path);
 
 			operator const fs::path&() const noexcept;
 			operator const std::string&() const noexcept;
@@ -32,8 +32,9 @@ namespace trash
 			uid_t get_uid() const noexcept;
 			gid_t get_gid() const noexcept;
 			dev_t get_dev() const noexcept;
-		private:
-			const fs::path& path;
+
+		protected:
+			fs::path path;
 			std::shared_ptr<struct stat> stat_info;
 	};
 }

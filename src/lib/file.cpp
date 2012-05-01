@@ -2,11 +2,12 @@
 #include "string.hpp"
 
 #include <stdexcept>
+#include <utility>
 
 using namespace ::trash;
 
-file::file(const fs::path& path)
-	:path(path),
+file::file(fs::path path)
+	:path{std::move(path)},
 	 stat_info{new struct stat()}
 {
 	//stat should return 0
