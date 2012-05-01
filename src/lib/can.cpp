@@ -85,12 +85,16 @@ void can::set_top_dir_can_1(fs::path path)
 		this->set_top_dir_can_2(std::move(path));
 		return;
 	}
-	this->path = file{std::move(trash_path)};
+	this->path = file{trash_path};
 	if (this->path.has_sticky() == false ||
 			this->path.is_symlink())
 	{
 		this->set_top_dir_can_2(std::move(path));
 	}
+	std::ostringstream oss;
+	oss << user::current().get_uid();
+	this->path = file{trash_path / oss.str()};
+	this->create_directory(this->path.as<fs::path>());
 }
 
 void can::set_top_dir_can_2(fs::path path)
