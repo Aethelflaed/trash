@@ -20,10 +20,8 @@ namespace trash
 		public:
 			file(fs::path path);
 
-			operator const fs::path&() const noexcept
+			operator fs::path() const noexcept
 			{ return this->path; }
-			operator const std::string&() const noexcept
-			{ return this->path.string(); }
 			operator const char*() const noexcept
 			{ return fs::absolute(this->path).c_str(); }
 
