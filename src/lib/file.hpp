@@ -23,7 +23,7 @@ namespace trash
 			operator fs::path() const noexcept
 			{ return this->path; }
 			operator const char*() const noexcept
-			{ return fs::absolute(this->path).c_str(); }
+			{ return this->path.c_str(); }
 
 			template <class T>
 				T as()
