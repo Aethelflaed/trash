@@ -8,6 +8,7 @@ using namespace ::trash;
 
 file::file(fs::path path)
 	:path{std::move(path)},
+	 status{fs::status(path)},
 	 stat_info{new struct stat()}
 {
 	//stat should return 0
@@ -17,31 +18,51 @@ file::file(fs::path path)
 	}
 }
 
-file::operator const fs::path&() const noexcept
+bool file::is_readable_by(const user& user) const noexcept
 {
-	return this->path;
-}
-file::operator const std::string&() const noexcept
-{
-	return this->path.string();
-}
-file::operator const char*() const noexcept
-{
-	return fs::absolute(this->path).c_str();
-}
-
-uid_t file::get_uid() const noexcept
-{
-	return this->stat_info->st_uid;
+	if (user.get_uid() == this->get_uid())
+	{
+		return this->get_perms() & 0400;
+	}
+	else if (user.get_gid() == this->get_gid())
+	{
+		return this->get_perms() & 0040;
+	}
+	else
+	{
+		return this->get_perms() & 0004;
+	}
 }
 
-gid_t file::get_gid() const noexcept
+bool file::is_writeable_by(const user& user) const noexcept
 {
-	return this->stat_info->st_gid;
+	if (user.get_uid() == this->get_uid())
+	{
+		return this->get_perms() & 0200;
+	}
+	else if (user.get_gid() == this->get_gid())
+	{
+		return this->get_perms() & 0020;
+	}
+	else
+	{
+		return this->get_perms() & 0002;
+	}
 }
 
-dev_t file::get_dev() const noexcept
+bool file::is_executable_by(const user& user) const noexcept
 {
-	return this->stat_info->st_dev;
+	if (user.get_uid() == this->get_uid())
+	{
+		return this->get_perms() & 0100;
+	}
+	else if (user.get_gid() == this->get_gid())
+	{
+		return this->get_perms() & 0010;
+	}
+	else
+	{
+		return this->get_perms() & 0001;
+	}
 }
 
