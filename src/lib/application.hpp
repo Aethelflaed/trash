@@ -18,20 +18,25 @@ namespace trash
 			application& set_options(options* opts) noexcept;
 			application& parse_options(int argc, const char** argv) noexcept;
 
-			application& set_name(std::string name) noexcept;
-
 			virtual int run();
 
-		protected:
 			void abort(const std::string& msg);
 			void report(const std::string& msg);
 			void message(const std::string& msg, std::ostream& stream = std::cout);
 
+			void print_help(bool should_exit = true);
+			void print_version(bool should_exit = true);
+
+			virtual std::string get_usage() const noexcept = 0;
+			virtual std::string get_name() const noexcept = 0;
+			virtual std::string get_version() const noexcept = 0;
+			virtual std::string get_copyright() const noexcept = 0;
+
+		protected:
 			bool ask(const std::string& msg);
 			bool is_affirmative(const std::string& response);
 
 			int status;
-			std::string name;
 			std::shared_ptr<options> opts;
 	};
 }

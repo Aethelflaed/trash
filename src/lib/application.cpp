@@ -26,11 +26,6 @@ application& application::parse_options(int argc, const char** argv) noexcept
 	}
 }
 
-application& application::set_name(std::string name) noexcept
-{
-	this->name = std::move(name);
-}
-
 int application::run()
 {
 	return this->status;
@@ -63,6 +58,26 @@ void application::report(const std::string& msg)
 
 void application::message(const std::string& msg, std::ostream& stream)
 {
-	stream << this->name << ": " << msg << std::flush;
+	stream << this->get_name() << ": " << msg << std::flush;
+}
+
+void application::print_help(bool should_exit)
+{
+	this->message(get_usage() + "\n");
+	std::cout << this->opts << std::endl;
+	if (should_exit)
+	{
+		exit(this->status);
+	}
+}
+
+void application::print_version(bool should_exit)
+{
+	std::cout << this->get_name() << " " << this->get_version() << std::endl;
+	std::cout << this->get_copyright() << std::endl;
+	if (should_exit)
+	{
+		exit(this->status);
+	}
 }
 
