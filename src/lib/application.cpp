@@ -75,7 +75,7 @@ void application::message(const std::string& msg, std::ostream& stream)
 void application::print_help(bool should_exit)
 {
 	this->message(get_usage() + "\n");
-	std::cout << this->opts << std::endl;
+	std::cout << *(this->opts) << std::endl;
 	if (should_exit)
 	{
 		exit(this->status);

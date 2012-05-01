@@ -28,6 +28,11 @@ namespace trash
 			void help(bool value = true);
 			void version(bool value = true);
 
+			friend std::ostream& operator<<(std::ostream& stream, const options& options)
+			{
+				stream << options.visible_options;
+				return stream;
+			}
 		protected:
 			void abort(const std::string& msg);
 
