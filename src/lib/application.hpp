@@ -34,6 +34,12 @@ namespace trash
 			virtual std::string get_copyright() const noexcept = 0;
 
 		protected:
+			template <class T>
+				T* opts_as()
+				{
+					return static_cast<T*>(this->opts.get());
+				}
+
 			virtual int run();
 
 			bool ask(const std::string& msg);

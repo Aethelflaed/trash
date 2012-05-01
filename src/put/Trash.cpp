@@ -22,7 +22,7 @@ int Trash::run()
 {
 	this->check_interactive_once();
 
-	for (const std::string& file : static_cast<Options*>(this->opts.get())->getInputFiles())
+	for (const std::string& file : this->opts_as<Options>()->getInputFiles())
 	{
 		fs::path path = this->check(file);
 		remove_file(path);
@@ -32,14 +32,14 @@ int Trash::run()
 
 void Trash::check_interactive_once()
 {
-	if (static_cast<Options*>(this->opts.get())->getInteractive() == Options::Interactive::once)
+	if (this->opts_as<Options>()->getInteractive() == Options::Interactive::once)
 	{
 		std::string msg;
-		if (static_cast<Options*>(this->opts.get())->isRecursive())
+		if (this->opts_as<Options>()->isRecursive())
 		{
 			msg = "remove all arguments recursively?";
 		}
-		else if (static_cast<Options*>(this->opts.get())->getInputFiles().size() > 3)
+		else if (this->opts_as<Options>()->getInputFiles().size() > 3)
 		{
 			msg = "remove all arguments?";
 		}
@@ -60,7 +60,7 @@ void Trash::remove_file(const fs::path& path)
 	{
 		remove_directory(path);
 	}
-	else if (static_cast<Options*>(this->opts.get())->isUnlink())
+	else if (this->opts_as<Options>()->isUnlink())
 	{
 		this->delete_file(path);
 	}
@@ -83,7 +83,7 @@ void Trash::delete_file(const fs::path& path)
 {
 	if (fs::remove(path))
 	{
-		if (static_cast<Options*>(this->opts.get())->isVerbose())
+		if (this->opts_as<Options>()->isVerbose())
 		{
 			message("removed ‘"_s + path.string() + "’\n");
 		}
@@ -113,8 +113,8 @@ std::string Trash::getTime()
 
 bool Trash::prompt(const fs::path& path)
 {
-	if (static_cast<Options*>(this->opts.get())->isForce() == false ||
-		static_cast<Options*>(this->opts.get())->getInteractive() == Options::Interactive::always)
+	if (this->opts_as<Options>()->isForce() == false ||
+		this->opts_as<Options>()->getInteractive() == Options::Interactive::always)
 	{
 		//fs::perms permissions = fs::status(path).permissions();
 		std::string file_type;
@@ -138,7 +138,7 @@ bool Trash::prompt(const fs::path& path)
 		fs::ifstream istream{path};
 
 		if (ostream.fail() ||
-			static_cast<Options*>(this->opts.get())->getInteractive() == Options::Interactive::always)
+			this->opts_as<Options>()->getInteractive() == Options::Interactive::always)
 		{
 			std::string msg{"remove "};
 			if (istream.fail() == false)
@@ -168,13 +168,13 @@ fs::path Trash::check(const std::string& file)
 	fs::path path{file};
 	if (fs::exists(path) == false)
 	{
-		if (static_cast<Options*>(this->opts.get())->isForce() == false)
+		if (this->opts_as<Options>()->isForce() == false)
 		{
 			this->report(this->cannot_remove(file, "No such file or directory"));
 		}
 		return fs::path{};
 	}
-	if (fs::is_directory(path) && static_cast<Options*>(this->opts.get())->isRecursive() == false)
+	if (fs::is_directory(path) && this->opts_as<Options>()->isRecursive() == false)
 	{
 		this->report(this->cannot_remove(file, "Is a directory"));
 		return fs::path{};
