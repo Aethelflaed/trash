@@ -3,10 +3,7 @@
 
 #include <string>
 
-std::string operator "" _s(const char* str, size_t /* length */)
-{
-	return std::string(str);
-}
+std::string operator "" _s(const char* str, size_t length);
 
 #endif /* TRASH_STRING_HPP */
 
