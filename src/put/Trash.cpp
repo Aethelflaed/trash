@@ -114,6 +114,7 @@ void Trash::erase_directory(const fs::path& path)
 	{
 		this->erase(it->path());
 	}
+	this->erase_file(path);
 }
 
 void Trash::check_interactive_once()
