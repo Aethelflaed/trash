@@ -50,6 +50,7 @@ po::variables_map* options::notify() noexcept
 	try
 	{
 		po::notify(vm);
+		this->notify_check();
 	}
 	catch (const po::error& e)
 	{

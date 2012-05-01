@@ -33,8 +33,11 @@ namespace trash
 				stream << options.visible_options;
 				return stream;
 			}
+
 		protected:
 			void abort(const std::string& msg);
+
+			virtual void notify_check() = 0;
 
 			void initialize() noexcept;
 			virtual void initialize_options() noexcept = 0;
