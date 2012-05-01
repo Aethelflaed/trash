@@ -53,8 +53,8 @@ public:
 	};
 
 private:
-	virtual void initialize_options() noexcept;
-	virtual void notify_check();
+	virtual void initialize_options() noexcept override;
+	virtual void notify_check() override;
 
 	po::typed_value<bool>* make_bool_switch(void (Options::*callback)(bool));
 
