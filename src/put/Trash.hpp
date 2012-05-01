@@ -15,14 +15,15 @@ public:
 	Trash() noexcept;
 	virtual ~Trash() noexcept;
 
-	virtual int run() override;
-
 	virtual std::string get_usage() const noexcept override;
 
 	virtual std::string get_name() const noexcept override;
 	virtual std::string get_version() const noexcept override;
 	virtual std::string get_copyright() const noexcept override;
+
 private:
+	virtual int run() override;
+
 	void check_interactive_once();
 
 	void remove_file(const fs::path& path);

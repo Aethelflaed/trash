@@ -16,9 +16,7 @@ namespace trash
 			virtual ~application() noexcept;
 
 			application& set_options(options* opts) noexcept;
-			application& parse_options(int argc, const char** argv) noexcept;
-
-			virtual int run();
+			int start(int argc, const char** argv);
 
 			void abort(const std::string& msg);
 			void abort_try(const std::string& msg);
@@ -36,6 +34,8 @@ namespace trash
 			virtual std::string get_copyright() const noexcept = 0;
 
 		protected:
+			virtual int run();
+
 			bool ask(const std::string& msg);
 			bool is_affirmative(const std::string& response);
 

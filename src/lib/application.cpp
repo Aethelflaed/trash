@@ -21,13 +21,14 @@ application& application::set_options(options* opts) noexcept
 	return *this;
 }
 
-application& application::parse_options(int argc, const char** argv) noexcept
+int application::start(int argc, const char** argv)
 {
 	if (this->opts != nullptr)
 	{
 		this->opts->store_cli(argc, argv);
+		this->opts->notify();
 	}
-	return *this;
+	return this->run();
 }
 
 int application::run()
