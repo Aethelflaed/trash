@@ -139,13 +139,3 @@ const fs::path& can::getPath() const noexcept
 	return this->path;
 }
 
-can::operator const fs::path&()
-{
-	return this->path;
-}
-
-can::operator const std::string&()
-{
-	return this->path.string();
-}
-
