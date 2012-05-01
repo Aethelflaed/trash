@@ -17,6 +17,7 @@ application::~application() noexcept
 application& application::set_options(options* opts) noexcept
 {
 	this->opts.reset(opts);
+	return *this;
 }
 
 application& application::parse_options(int argc, const char** argv) noexcept
@@ -25,6 +26,7 @@ application& application::parse_options(int argc, const char** argv) noexcept
 	{
 		this->opts->store_cli(argc, argv);
 	}
+	return *this;
 }
 
 int application::run()
