@@ -1,6 +1,7 @@
-#ifndef TRASH_TRASH_HPP
-#define TRASH_TRASH_HPP
+#ifndef TRASH_PUT_TRASH_HPP
+#define TRASH_PUT_TRASH_HPP
 
+#include <application.hpp>
 #include "Options.hpp"
 #include <boost/filesystem.hpp>
 #include <iostream>
@@ -8,14 +9,23 @@
 
 namespace fs = ::boost::filesystem;
 
-class Trash
+class Trash : public ::trash::application
 {
 public:
-	Trash(int argc, const char** argv) noexcept;
+	Trash() noexcept;
+	virtual ~Trash() noexcept;
 
-	int run();
+	virtual int run() override;
 
+	virtual std::string get_usage() const noexcept override;
+	virtual std::string get_try_msg() const noexcept override;
+
+	virtual std::string get_name() const noexcept override;
+	virtual std::string get_version() const noexcept override;
+	virtual std::string get_copyright() const noexcept override;
 private:
+	void check_interactive_once();
+
 	void remove_file(const fs::path& path);
 	void remove_directory(const fs::path& path);
 
@@ -25,24 +35,14 @@ private:
 	std::string getTime();
 
 	bool prompt(const fs::path& path);
-	bool ask(const std::string& msg);
-	bool affirmative(const std::string& response);
 
 	fs::path check(const std::string& file);
 
-	void abort(const std::string& file, const char* msg);
-	void abort(const fs::path& file, const char* msg);
-	void abort(const std::string& msg);
-	void report(const std::string& file, const char* msg);
-	void report(const fs::path& file, const char* msg);
-	void report_basic(const std::string& msg);
-	void report_basic(const char* msg);
-	void message(const std::string& msg, std::ostream& stream = std::cout);
+	std::string cannot_remove(const std::string& filename, const std::string& msg);
+	std::string cannot_remove(const fs::path& path, const std::string& msg);
 
-	Options options;
 	std::string trash_can;
-	int status;
 };
 
-#endif /* TRASH_TRASH_HPP */
+#endif /* TRASH_PUT_TRASH_HPP */
 

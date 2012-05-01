@@ -1,4 +1,5 @@
 #include "Trash.hpp"
+#include <string.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -7,28 +8,38 @@
 
 using namespace ::trash;
 
-Trash::Trash(int argc, const char** argv) noexcept
-	:status{0}
+Trash::Trash() noexcept
+	:application()
 {
-	options.store_cli(argc, argv);
-	options.notify();
+	this->set_options(new Options(*this));
+}
 
-	if (isatty(fileno(stdin)) == false)
-	{
-		options.setForce(true);
-	}
+Trash::~Trash() noexcept
+{
 }
 
 int Trash::run()
 {
-	if (options.getInteractive() == Options::Interactive::once)
+	this->check_interactive_once();
+
+	for (const std::string& file : static_cast<Options*>(this->opts.get())->getInputFiles())
+	{
+		fs::path path = this->check(file);
+		remove_file(path);
+	}
+	return status;
+}
+
+void Trash::check_interactive_once()
+{
+	if (static_cast<Options*>(this->opts.get())->getInteractive() == Options::Interactive::once)
 	{
 		std::string msg;
-		if (options.isRecursive())
+		if (static_cast<Options*>(this->opts.get())->isRecursive())
 		{
 			msg = "remove all arguments recursively?";
 		}
-		else if (options.getInputFiles().size() > 3)
+		else if (static_cast<Options*>(this->opts.get())->getInputFiles().size() > 3)
 		{
 			msg = "remove all arguments?";
 		}
@@ -37,13 +48,6 @@ int Trash::run()
 			exit(0);
 		}
 	}
-
-	for (const std::string& file : options.getInputFiles())
-	{
-		fs::path path = this->check(file);
-		remove_file(path);
-	}
-	return status;
 }
 
 void Trash::remove_file(const fs::path& path)
@@ -56,7 +60,7 @@ void Trash::remove_file(const fs::path& path)
 	{
 		remove_directory(path);
 	}
-	else if (options.isUnlink())
+	else if (static_cast<Options*>(this->opts.get())->isUnlink())
 	{
 		this->delete_file(path);
 	}
@@ -79,14 +83,14 @@ void Trash::delete_file(const fs::path& path)
 {
 	if (fs::remove(path))
 	{
-		if (options.isVerbose())
+		if (static_cast<Options*>(this->opts.get())->isVerbose())
 		{
-			message(std::string("removed ‘") + path.string() + "’\n");
+			message("removed ‘"_s + path.string() + "’\n");
 		}
 	}
 	else
 	{
-		report(path, "Permission denied");
+		this->report(this->cannot_remove(path, "Permission denied"));
 	}
 }
 
@@ -109,8 +113,8 @@ std::string Trash::getTime()
 
 bool Trash::prompt(const fs::path& path)
 {
-	if (options.isForce() == false ||
-		options.getInteractive() == Options::Interactive::always)
+	if (static_cast<Options*>(this->opts.get())->isForce() == false ||
+		static_cast<Options*>(this->opts.get())->getInteractive() == Options::Interactive::always)
 	{
 		//fs::perms permissions = fs::status(path).permissions();
 		std::string file_type;
@@ -134,7 +138,7 @@ bool Trash::prompt(const fs::path& path)
 		fs::ifstream istream{path};
 
 		if (ostream.fail() ||
-			options.getInteractive() == Options::Interactive::always)
+			static_cast<Options*>(this->opts.get())->getInteractive() == Options::Interactive::always)
 		{
 			std::string msg{"remove "};
 			if (istream.fail() == false)
@@ -159,33 +163,20 @@ bool Trash::prompt(const fs::path& path)
 	return true;
 }
 
-bool Trash::ask(const std::string& msg)
-{
-	message(msg + " ", std::cout);
-	std::string response;
-	std::cin >> response;
-	return affirmative(response);
-}
-
-bool Trash::affirmative(const std::string& response)
-{
-	return response == "yes" || response == "y";
-}
-
 fs::path Trash::check(const std::string& file)
 {
 	fs::path path{file};
 	if (fs::exists(path) == false)
 	{
-		if (options.isForce() == false)
+		if (static_cast<Options*>(this->opts.get())->isForce() == false)
 		{
-			report(file, "No such file or directory");
+			this->report(this->cannot_remove(file, "No such file or directory"));
 		}
 		return fs::path{};
 	}
-	if (fs::is_directory(path) && options.isRecursive() == false)
+	if (fs::is_directory(path) && static_cast<Options*>(this->opts.get())->isRecursive() == false)
 	{
-		report(file, "Is a directory");
+		this->report(this->cannot_remove(file, "Is a directory"));
 		return fs::path{};
 	}
 	if (file == "." ||
@@ -193,52 +184,38 @@ fs::path Trash::check(const std::string& file)
 		boost::algorithm::ends_with(file, "/.") ||
 		boost::algorithm::ends_with(file, "/.."))
 	{
-		report_basic(std::string("cannot remove directory: ‘") + file + "’");
+		report("cannot remove directory: ‘"_s + file + "’");
 		return fs::path{};
 	}
 
 	return path;
 }
 
-void Trash::abort(const std::string& file, const char* msg)
+
+std::string Trash::cannot_remove(const std::string& filename, const std::string& msg)
 {
-	report(file, msg);
-	exit(status);
+	return "cannot remove ‘"_s + filename + "’: " + msg;
 }
-void Trash::abort(const fs::path& file, const char* msg)
+std::string Trash::cannot_remove(const fs::path& path, const std::string& msg)
 {
-	abort(file.string(), msg);
-}
-void Trash::abort(const std::string& msg)
-{
-	report_basic(msg);
-	exit(status);
+	return this->cannot_remove(path.string(), msg);
 }
 
-void Trash::report(const std::string& file, const char* msg)
-{
-	report_basic(std::string("cannot remove ‘") + file
-			+ "’: " + msg);
-}
-void Trash::report(const fs::path& file, const char* msg)
-{
-	report(file.string(), msg);
-}
 
-void Trash::report_basic(const std::string& msg)
+std::string Trash::get_usage() const noexcept
 {
-	status++;
-	message(msg + "\n", std::cerr);
+	return "usage `"_s + this->get_name() + " [OPTIONS] file ...`";
 }
-
-void Trash::report_basic(const char* msg)
+std::string Trash::get_name() const noexcept
 {
-	report_basic(std::string(msg));
+	return "trash-put";
 }
-
-void Trash::message(const std::string& msg, std::ostream& stream)
+std::string Trash::get_version() const noexcept
 {
-	stream << options.getProgramName()
-		<< ": " << msg << std::flush;
+	return "1.0";
+}
+std::string Trash::get_copyright() const noexcept
+{
+	return "Written by Geoffroy Planquart <geoffroy@aethelflaed.com>";
 }
 
