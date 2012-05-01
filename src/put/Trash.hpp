@@ -24,24 +24,22 @@ public:
 private:
 	virtual int run() override;
 
+	bool check(const fs::path& path);
+
+	void trash(const fs::path& path);
+
+	void erase(const fs::path& path);
+	void erase_file(const fs::path& path);
+	void erase_directory(const fs::path& path);
+
 	void check_interactive_once();
-
-	void remove_file(const fs::path& path);
-	void remove_directory(const fs::path& path);
-
-	void delete_file(const fs::path& path);
-	void move_file(const fs::path& path);
-
-	std::string getTime();
 
 	bool prompt(const fs::path& path);
 
-	fs::path check(const std::string& file);
+	std::string getTime();
 
 	std::string cannot_remove(const std::string& filename, const std::string& msg);
 	std::string cannot_remove(const fs::path& path, const std::string& msg);
-
-	std::string trash_can;
 };
 
 #endif /* TRASH_PUT_TRASH_HPP */
