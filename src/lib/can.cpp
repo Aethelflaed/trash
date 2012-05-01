@@ -1,4 +1,5 @@
 #include "can.hpp"
+#include "string.hpp"
 #include <utility>
 #include <algorithm>
 #include <sstream>
@@ -79,11 +80,6 @@ can::can(fs::path path, bool fs_trash)
 	create_directory(info);
 	this->files = file{files};
 	this->info = file{info};
-
-	if (this->info.is_writeable_by(user::current()) == false)
-		throw std::runtime_error{this->info.as<std::string>() + " is not writable"};
-	if (this->files.is_writeable_by(user::current()) == false)
-		throw std::runtime_error{this->files.as<std::string>() + " is not writable"};
 }
 
 void can::set_top_dir_can_1(fs::path path)
@@ -103,7 +99,14 @@ void can::set_top_dir_can_1(fs::path path)
 	std::ostringstream oss;
 	oss << user::current().get_uid();
 	this->path = file{trash_path / oss.str()};
-	this->create_directory(this->path.as<fs::path>());
+	try
+	{
+		this->create_directory(this->path.as<fs::path>());
+	}
+	catch (const std::runtime_error& e)
+	{
+		this->set_top_dir_can_2(std::move(path));
+	}
 }
 
 void can::set_top_dir_can_2(fs::path path)
@@ -132,11 +135,14 @@ void can::create_directory(const fs::path& path)
 			throw std::runtime_error{oss.str()};
 		}
 	}
-	if (fs::is_directory(path) == false)
+	file directory{path};
+	if (directory.is_directory() == false)
 	{
-		std::ostringstream oss;
-		oss << "File " << path << " is not a directory";
-		throw std::runtime_error{oss.str()};
+		throw std::runtime_error{"File "_s + directory.as<std::string>() + " is not a directory"};
+	}
+	if (directory.is_writeable_by(user::current()) == false)
+	{
+		throw std::runtime_error{"File "_s + directory.as<std::string>() + " is not writeable"};
 	}
 }
 
