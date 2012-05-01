@@ -57,7 +57,7 @@ void application::abort(const std::string& msg)
 void application::abort_try(const std::string& msg)
 {
 	this->report(msg);
-	this->message(get_try_msg());
+	this->message(get_try_msg() + "\n");
 	exit(this->status);
 }
 
