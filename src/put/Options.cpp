@@ -4,6 +4,7 @@
 #include <utility>
 #include <fstream>
 #include <boost/bind.hpp>
+#include <iostream>
 #include <boost/algorithm/string/replace.hpp>
 #include <string.hpp>
 
@@ -19,6 +20,7 @@ Options::Options(application& app) noexcept
 	 unlink{false},
 	 interactive{Interactive::never}
 {
+	this->initialize();
 }
 
 void Options::notify_check()
