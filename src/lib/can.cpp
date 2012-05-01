@@ -11,19 +11,23 @@ std::vector<can> can::trashcans;
 /**
  * Get the trashcan responsible for forFile
  */
-can& can::get_for(fs::path forFile)
+can& can::get_for(fs::path file)
 {
-	forFile = fs::absolute(std::move(forFile));
-	if (isInHome(forFile))
+	file = fs::absolute(std::move(file));
+	if (is_in_home(file))
 	{
-		return getCanInDirectory(user::current().get_HOME(), false);
+		return can_for_directory(user::current().get_HOME(), false);
 	}
-	return getCanInDirectory(cppmounts::for_path(forFile.string())->getPath());
+
+	std::string top_dir{cppmounts::for_path(file.string())->getPath()};
+
+	return can_for_directory(top_dir);
 }
 
-bool can::isInHome(const fs::path& file)
+bool can::is_in_home(const fs::path& file)
 {
 	fs::path home{user::current().get_HOME()};
+
 	for (auto it = home.begin(), file_it = file.begin();
 		 it != home.end() && file_it != file.end();
 		 it++, file_it++)
@@ -36,7 +40,7 @@ bool can::isInHome(const fs::path& file)
 	return true;
 }
 
-can& can::getCanInDirectory(fs::path directory_path, bool fs_trash)
+can& can::can_for_directory(fs::path directory_path, bool fs_trash)
 {
 	auto it = std::find(trashcans.begin(), trashcans.end(), directory_path);
 	if (it == trashcans.end())
@@ -56,53 +60,53 @@ can& can::getCanInDirectory(fs::path directory_path, bool fs_trash)
  * should be hidden or not.
  */
 can::can(fs::path path, bool fs_trash)
-	:directory{path},
+	:for_directory{path},
 	 fs_trash{fs_trash}
 {
 	if (fs_trash == false)
 	{
-		this->path = fs::path{user::current().get_XDG_DATA_HOME()} / "Trash";
-		this->createDirectory();
+		this->path = file{fs::path{user::current().get_XDG_DATA_HOME()} / "Trash"};
+		this->create_directory(this->path.as<fs::path>());
 	}
 	else
 	{
-		setCanInTopDirectory(std::move(path));
+		set_top_dir_can_1(std::move(path));
 	}
 
-	createDirectory(this->path / "files");
-	createDirectory(this->path / "info");
+	create_directory(this->path.as<fs::path>() / "files");
+	create_directory(this->path.as<fs::path>() / "info");
 }
 
-void can::setCanInTopDirectory(const fs::path& path, bool dotTrash)
+void can::set_top_dir_can_1(fs::path path)
 {
+	fs::path trash_path{path / ".Trash"};
+	if (fs::exists(trash_path) == false)
+	{
+		this->set_top_dir_can_2(std::move(path));
+		return;
+	}
+	this->path = file{std::move(trash_path)};
+	if (this->path.has_sticky() == false ||
+			this->path.is_symlink())
+	{
+		this->set_top_dir_can_2(std::move(path));
+	}
+}
+
+void can::set_top_dir_can_2(fs::path path)
+{
+	//TODO report to admin
+
 	boost::system::error_code ec;
 	std::ostringstream oss;
 
-	if (dotTrash)
-	{
-		this->path = path / ".Trash";
-		if (fs::exists(this->path) == false)
-		{
-			setCanInTopDirectory(path, false);
-		}
-		else
-		{
-			//TODO check sticky bit and so on
-		}
-	}
-	else
-	{
-		oss << ".Trash-" << user::current().get_uid();
-		this->path = path / oss.str();
-		this->createDirectory();
-	}
+	oss << ".Trash-" << user::current().get_uid();
+
+	this->path = file{path / oss.str()};
+	this->create_directory(this->path.as<fs::path>());
 }
 
-void can::createDirectory()
-{
-	createDirectory(this->path);
-}
-void can::createDirectory(const fs::path& path)
+void can::create_directory(const fs::path& path)
 {
 	boost::system::error_code ec;
 	if (fs::exists(path) == false)
@@ -131,11 +135,6 @@ void can::put(const fs::path& path)
 
 bool can::operator==(const fs::path& directory_path)
 {
-	return this->directory == path;
-}
-
-const fs::path& can::getPath() const noexcept
-{
-	return this->path;
+	return this->for_directory == directory_path;
 }
 
