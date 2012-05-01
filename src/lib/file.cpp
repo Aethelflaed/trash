@@ -66,3 +66,33 @@ bool file::is_executable_by(const user& user) const noexcept
 	}
 }
 
+std::string file::get_type_as_string() const noexcept
+{
+	switch(this->get_type())
+	{
+		case fs::regular_file:
+			if (this->is_empty())
+				return "regular empty file";
+			return "regular file";
+		case fs::directory_file:
+			if (this->is_empty())
+				return "empty directory";
+			return "directory";
+		case fs::symlink_file:
+			return "symbolic link";
+		case fs::block_file:
+			return "block file";
+		case fs::character_file:
+			return "character file";
+		case fs::fifo_file:
+			return "fifo file";
+		case fs::socket_file:
+			return "socket file";
+		case fs::status_error:
+			return "status error";
+		case fs::type_unknown:
+		default:
+			return "unknown file type";
+	}
+}
+

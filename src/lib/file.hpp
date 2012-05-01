@@ -39,6 +39,8 @@ namespace trash
 			{ return this->stat_info->st_gid; }
 			dev_t get_dev() const noexcept
 			{ return this->stat_info->st_dev; }
+			uintmax_t get_size() const noexcept
+			{ return this->stat_info->st_size; }
 
 			fs::perms get_perms() const noexcept
 			{ return this->status.permissions(); }
@@ -74,6 +76,11 @@ namespace trash
 			{ return this->get_type() == fs::type_unknown; }
 			bool has_status_error() const noexcept
 			{ return this->get_type() == fs::status_error; }
+
+			bool is_empty() const noexcept
+			{ return fs::is_empty(this->path); }
+
+			std::string get_type_as_string() const noexcept;
 
 		protected:
 			fs::path path;
