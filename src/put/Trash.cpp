@@ -95,11 +95,19 @@ void Trash::erase(const fs::path& path)
 }
 void Trash::erase_file(const fs::path& path)
 {
-	if (fs::remove(path))
+	boost::system::error_code ec;
+	bool directory = fs::is_directory(path);
+	fs::remove(path, ec);
+	if (!ec)
 	{
 		if (this->opts_as<Options>()->isVerbose())
 		{
-			this->message("removed ‘"_s + path.string() + "’\n");
+			std::ostringstream oss;
+			oss << "removed ";
+			if (directory)
+				oss << "directory: ";
+			oss << "‘" << path.string() << "’\n";
+			this->message(oss.str());
 		}
 	}
 	else
@@ -114,7 +122,10 @@ void Trash::erase_directory(const fs::path& path)
 	{
 		this->erase(it->path());
 	}
-	this->erase_file(path);
+	if (fs::is_empty(path))
+	{
+		this->erase_file(path);
+	}
 }
 
 void Trash::check_interactive_once()
@@ -139,13 +150,16 @@ void Trash::check_interactive_once()
 
 bool Trash::prompt(fs::path path)
 {
-	if (this->opts_as<Options>()->isForce() == false ||
+	trash::file file{std::move(path)};
+
+	if ((this->opts_as<Options>()->isForce() == false &&
+				file.is_writeable_by(user::current()) == false) ||
 		this->opts_as<Options>()->getInteractive() == Options::Interactive::always)
 	{
-		trash::file file{std::move(path)};
-
 		std::ostringstream oss;
-		if (file.is_directory() && file.is_empty() == false)
+		if (file.is_directory() &&
+				file.is_empty() == false &&
+				this->opts_as<Options>()->isUnlink())
 		{
 			oss << "descend into ";
 			if (file.is_writeable_by(user::current()) == false)
@@ -154,7 +168,10 @@ bool Trash::prompt(fs::path path)
 		}
 		else
 		{
-			oss << "remove ";
+			if (this->opts_as<Options>()->isUnlink())
+				oss << "remove ";
+			else
+				oss << "trash ";
 			if (file.is_writeable_by(user::current()) == false)
 				oss << "write-protected ";
 			oss << file.get_type_as_string();
