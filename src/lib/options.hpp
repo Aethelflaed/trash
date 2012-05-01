@@ -31,7 +31,9 @@ namespace trash
 		protected:
 			void abort(const std::string& msg);
 
-			virtual void initialize_options() noexcept;
+			void initialize() noexcept;
+			virtual void initialize_options() noexcept = 0;
+
 			po::typed_value<bool>* make_bool_switch(void (options::*callback)(bool));
 
 			application& app;

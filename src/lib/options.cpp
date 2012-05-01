@@ -15,6 +15,10 @@ options::options(application& app) noexcept
 	 cli_options{"."},
 	 visible_options{"Allowed options"}
 {
+}
+
+void options::initialize() noexcept
+{
 	generic.add_options()
 		("help,h", make_bool_switch(&options::help), "produce help message and exit")
 		("version,V", make_bool_switch(&options::version), "print version message and exit")
