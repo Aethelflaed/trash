@@ -56,6 +56,25 @@ namespace trash
 			bool is_writeable_by(const user& user) const noexcept;
 			bool is_executable_by(const user& user) const noexcept;
 
+			bool is_regular() const noexcept
+			{ return this->get_type() == fs::regular_file; }
+			bool is_directory() const noexcept
+			{ return this->get_type() == fs::directory_file; }
+			bool is_symlink() const noexcept
+			{ return this->get_type() == fs::symlink_file; }
+			bool is_block() const noexcept
+			{ return this->get_type() == fs::block_file; }
+			bool is_character() const noexcept
+			{ return this->get_type() == fs::character_file; }
+			bool is_fifo() const noexcept
+			{ return this->get_type() == fs::fifo_file; }
+			bool is_socket() const noexcept
+			{ return this->get_type() == fs::socket_file; }
+			bool is_unknown_type() const noexcept
+			{ return this->get_type() == fs::type_unknown; }
+			bool has_status_error() const noexcept
+			{ return this->get_type() == fs::status_error; }
+
 		protected:
 			fs::path path;
 			fs::file_status status;
