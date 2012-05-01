@@ -3,3 +3,4 @@ obj/
 lib/
 include/
 test/
+!src/lib
