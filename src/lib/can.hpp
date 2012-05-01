@@ -36,6 +36,8 @@ namespace trash
 			static std::vector<can> trashcans;
 
 			file path;
+			file files;
+			file info;
 			fs::path for_directory;
 			bool fs_trash;
 	};

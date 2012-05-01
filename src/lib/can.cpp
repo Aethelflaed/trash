@@ -73,8 +73,17 @@ can::can(fs::path path, bool fs_trash)
 		set_top_dir_can_1(std::move(path));
 	}
 
-	create_directory(this->path.as<fs::path>() / "files");
-	create_directory(this->path.as<fs::path>() / "info");
+	fs::path files = this->path.as<fs::path>() / "files";
+	fs::path info = this->path.as<fs::path>() / "info";
+	create_directory(files);
+	create_directory(info);
+	this->files = file{files};
+	this->info = file{info};
+
+	if (this->info.is_writeable_by(user::current()) == false)
+		throw std::runtime_error{this->info.as<std::string>() + " is not writable"};
+	if (this->files.is_writeable_by(user::current()) == false)
+		throw std::runtime_error{this->files.as<std::string>() + " is not writable"};
 }
 
 void can::set_top_dir_can_1(fs::path path)
