@@ -18,7 +18,6 @@ public:
 	virtual int run() override;
 
 	virtual std::string get_usage() const noexcept override;
-	virtual std::string get_try_msg() const noexcept override;
 
 	virtual std::string get_name() const noexcept override;
 	virtual std::string get_version() const noexcept override;
