@@ -2,6 +2,6 @@
 
 int main(int argc, const char** argv)
 {
-	return Trash{argc, argv}.run();
+	return Trash{}.start(argc, argv);
 }
 
