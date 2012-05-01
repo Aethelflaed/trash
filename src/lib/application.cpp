@@ -1,5 +1,6 @@
 #include "application.hpp"
 #include "options.hpp"
+#include "string.hpp"
 #include <utility>
 
 using namespace ::trash;
@@ -93,11 +94,11 @@ void application::print_version(bool should_exit)
 
 std::string application::get_usage() const noexcept
 {
-	return std::string("usage `") + this->get_name() + " [OPTIONS]`";
+	return "usage `"_s + this->get_name() + " [OPTIONS]`";
 }
 std::string application::get_try_msg() const noexcept
 {
-	return std::string("Try `") + this->get_name() + " --help` for more information.";
+	return "Try `"_s + this->get_name() + " --help` for more information.";
 }
 
 std::string application::get_version() const noexcept
