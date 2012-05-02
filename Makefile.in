@@ -96,10 +96,12 @@ libs :=\
 all: $(localdirs) $(libs) $(lib_headers) $(apps)
 
 clean:
-	$(RM) -r $(objdir)/*
-	$(RM) -r $(bindir)/*
-	$(RM) -r $(libdir)/*
-	$(RM) -r $(incdir)/*
+	$(RM) -r $(objdir)
+	$(RM) -r $(bindir)
+	$(RM) -r $(libdir)
+	$(RM) -r $(incdir)
+	$(RM) config.{h,log,status}
+	$(RM) Makefile
 
 $(target_shared_lib): $(shared_lib_objs)
 	$(LINK.cc) $(shared_lib_LDFLAGS) $^ -o $@
