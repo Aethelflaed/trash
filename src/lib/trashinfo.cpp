@@ -111,7 +111,7 @@ trashinfo::trashinfo(fs::path file, fs::path path)
 	}
 
 	this->path = this->url_encode(path.string());
-	this->deletion_date = this->get_current_time();
+	this->deletion_date = get_current_time();
 
 	std::ostringstream oss;
 	oss << "[Trash Info]\n"

@@ -19,7 +19,7 @@ namespace trash
 
 			bool operator==(const fs::path& directory_path);
 
-			void put(const fs::path& path);
+			bool put(const fs::path& path);
 		private:
 			static bool is_in_home(const fs::path& file);
 			static can& can_for_directory(fs::path directory_path, bool fs_trash = true);

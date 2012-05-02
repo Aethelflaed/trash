@@ -12,12 +12,12 @@ namespace trash
 		public:
 			static trashinfo create(fs::path file, fs::path path);
 			static trashinfo read(fs::path file);
+			static std::string get_current_time();
 
 		private:
 			trashinfo(fs::path path);
 			trashinfo(fs::path file, fs::path path);
 
-			std::string get_current_time();
 			std::string url_encode(std::string string);
 
 			fs::path file;

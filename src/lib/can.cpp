@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <sstream>
 #include <stdexcept>
+#include "trashinfo.hpp"
 
 using namespace ::trash;
 
@@ -146,10 +147,35 @@ void can::create_directory(const fs::path& path)
 	}
 }
 
-void can::put(const fs::path& path)
+bool can::put(const fs::path& path)
 {
-	//TODO info file
-	//then move
+	int i = 0;
+	std::ostringstream oss;
+	std::string name;
+	do
+	{
+		oss.str("");
+		oss << path.filename().string()
+			<< " - " << trashinfo::get_current_time()
+			<< " - " << i;
+		name = oss.str();
+		oss << ".trashinfo";
+		try
+		{
+			trashinfo::create(this->info.as<fs::path>() / oss.str(), path);
+			i = 0;
+		}
+		catch(const std::runtime_error& e)
+		{
+			i++;
+		}
+	} while (i > 0);
+
+	boost::system::error_code ec;
+
+	fs::rename(fs::absolute(path), this->files.as<fs::path>() / name, ec);
+
+	return !ec;
 }
 
 bool can::operator==(const fs::path& directory_path)

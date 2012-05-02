@@ -73,7 +73,23 @@ bool Trash::check(const fs::path& path)
 
 void Trash::trash(const fs::path& path)
 {
-	can::get_for(path).put(path);
+	bool directory = fs::is_directory(path);
+	if (can::get_for(path).put(path))
+	{
+		if (this->opts_as<Options>()->isVerbose())
+		{
+			std::ostringstream oss;
+			oss << "trashed ";
+			if (directory)
+				oss << "directory: ";
+			oss << "‘" << path.string() << "’\n";
+			this->message(oss.str());
+		}
+	}
+	else
+	{
+		this->report(this->cannot_remove(path, "Permission denied"));
+	}
 }
 
 void Trash::erase(const fs::path& path)
