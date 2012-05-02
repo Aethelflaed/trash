@@ -2,8 +2,10 @@
 #include "string.hpp"
 #include <stdexcept>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/program_options.hpp>
 #include <utility>
 #include <sstream>
+#include <fstream>
 
 extern "C"
 {
@@ -17,67 +19,90 @@ extern "C"
 using namespace ::trash;
 
 namespace pt = ::boost::posix_time;
+namespace po = ::boost::program_options;
 
 /**
  * create trashinfo file
  * throw if file does exist.
  */
-trashinfo trashinfo::create(fs::path path)
+trashinfo trashinfo::create(fs::path file, fs::path path)
 {
-	return trashinfo{path, true};
+	return trashinfo{std::move(file), std::move(path)};
 }
 
 /**
  * open trashinfo file for read.
  * throw if file does not exist.
  */
-trashinfo trashinfo::read(fs::path path)
+trashinfo trashinfo::read(fs::path file)
 {
-	return trashinfo{path};
+	return trashinfo{std::move(file)};
 }
 
 /**
  * open trashinfo file for read.
  * throw if file does not exist.
  */
-trashinfo::trashinfo(fs::path path)
-	:path{fs::absolute(std::move(path))}
+trashinfo::trashinfo(fs::path file)
+	:file{fs::absolute(std::move(file))}
 {
+	po::options_description desc;
+	desc.add_options()
+		("Trash Info.Path", po::value<std::vector<std::string>>(), "")
+		("Trash Info.DeletionDate", po::value<std::vector<std::string>>(), "")
+		;
+	po::variables_map vm;
+	std::ifstream stream(this->file.string());
+	po::store(po::parse_config_file(stream, desc, true), vm);
+	po::notify(vm);
+
+	if (vm.count("Trash Info.Path"))
+		this->path = vm["Trash Info.Path"].as<std::vector<std::string>>()[0];
+	else
+		throw std::runtime_error{"Broken trashinfo file"_s + this->file.string()};
+
+	if (vm.count("Trash Info.DeletionDate"))
+		this->path = vm["Trash Info.DeletionDate"].as<std::vector<std::string>>()[0];
+	else
+		throw std::runtime_error{"Broken trashinfo file"_s + this->file.string()};
 }
 
 /**
  * create trashinfo file
  * throw if file does exist.
  */
-trashinfo::trashinfo(fs::path path, bool /* create */)
+trashinfo::trashinfo(fs::path file, fs::path path)
+	:file{fs::absolute(std::move(file))}
 {
-	path = fs::absolute(std::move(path));
-	int file = open(path.c_str(), O_CREAT | O_EXCL | O_WRONLY, 0640);
-	if (file < 0)
+	int fildes = open(this->file.c_str(), O_CREAT | O_EXCL | O_WRONLY, 0640);
+	if (fildes < 0)
 	{
-		throw std::runtime_error{"Unable to create file "_s + path.string()};
+		throw std::runtime_error{"Unable to create file "_s + this->file.string()};
 	}
+
+	this->path = path.string();
+	this->deletion_date = this->get_current_time();
 
 	std::ostringstream oss;
 	oss << "[Trash Info]\n"
-		<< "Path=" << path.string() << "\n"
-		<< "DeletionDate=" << this->getTime() << "\n"
+		<< "Path=" << this->path << "\n"
+		<< "DeletionDate=" << this->deletion_date << "\n"
 		;
 	const char* content = oss.str().c_str();
 
-	if (write(file, content, strlen(content)) == -1)
+	if (write(fildes, content, strlen(content)) == -1)
 	{
-		close(file);
-		throw std::runtime_error{"Error while writing file "_s + path.string()};
+		close(fildes);
+		throw std::runtime_error{"Error while writing file "_s + this->file.string()};
 	}
 
-	if (close(file) != 0)
+	if (close(fildes) != 0)
 	{
-		throw std::runtime_error{"Error while closing file "_s + path.string()};
+		throw std::runtime_error{"Error while closing file "_s + this->file.string()};
 	}
 }
 
-std::string trashinfo::getTime()
+std::string trashinfo::get_current_time()
 {
 	std::ostringstream oss;
 	const pt::ptime now = pt::second_clock::local_time();
