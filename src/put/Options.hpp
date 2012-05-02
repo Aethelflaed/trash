@@ -1,6 +1,7 @@
 #ifndef TRASH_PUT_OPTIONS_HPP
 #define TRASH_PUT_OPTIONS_HPP
 
+#include "header.hpp"
 #include <boost/program_options.hpp>
 #include <string>
 #include <options.hpp>
