@@ -4,13 +4,10 @@
 #include <user.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem/fstream.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <sstream>
 #include <unistd.h>
 
 using namespace ::trash;
-
-namespace pt = ::boost::posix_time;
 
 Trash::Trash() noexcept
 	:application()
@@ -180,16 +177,6 @@ bool Trash::prompt(fs::path path)
 		return ask(oss.str());
 	}
 	return true;
-}
-
-std::string Trash::getTime()
-{
-	std::ostringstream oss;
-	const pt::ptime now = pt::second_clock::local_time();
-	pt::time_facet*const f = new pt::time_facet("%Y-%m-%d %H:%M:%S");
-	oss.imbue(std::locale(oss.getloc(), f));
-	oss << now;
-	return oss.str();
 }
 
 std::string Trash::cannot_remove(const std::string& filename, const std::string& msg)
