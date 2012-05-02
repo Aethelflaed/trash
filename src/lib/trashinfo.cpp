@@ -21,6 +21,36 @@ using namespace ::trash;
 namespace pt = ::boost::posix_time;
 namespace po = ::boost::program_options;
 
+#include <boost/function_output_iterator.hpp>
+#include <boost/bind.hpp>
+#include <algorithm>
+#include <sstream>
+#include <iostream>
+#include <iterator>
+#include <iomanip>
+
+namespace
+{
+	std::string encimpl(std::string::value_type v)
+	{
+		if (isalnum(v))
+			return std::string()+v;
+
+		std::ostringstream enc;
+		enc << '%' << std::setw(2) << std::setfill('0') << std::hex << std::uppercase << int(static_cast<unsigned char>(v));
+		return enc.str();
+	}
+}
+
+std::string trashinfo::url_encode(std::string string)
+{
+	std::string str;
+	std::transform(string.begin(), string.end(),
+			boost::make_function_output_iterator(boost::bind(static_cast<std::string& (std::string::*)(const std::string&)>(&std::string::append), &str, _1)),
+			encimpl);
+	return str;
+}
+
 /**
  * create trashinfo file
  * throw if file does exist.
@@ -80,7 +110,7 @@ trashinfo::trashinfo(fs::path file, fs::path path)
 		throw std::runtime_error{"Unable to create file "_s + this->file.string()};
 	}
 
-	this->path = path.string();
+	this->path = this->url_encode(path.string());
 	this->deletion_date = this->get_current_time();
 
 	std::ostringstream oss;

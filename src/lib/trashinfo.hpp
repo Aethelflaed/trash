@@ -18,6 +18,7 @@ namespace trash
 			trashinfo(fs::path file, fs::path path);
 
 			std::string get_current_time();
+			std::string url_encode(std::string string);
 
 			fs::path file;
 			std::string deletion_date;
