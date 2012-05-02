@@ -1,20 +1,20 @@
 srcdir := src
+objdir := obj
+bindir := bin
+libdir := lib
+incdir := include
+
 lib_srcdir := $(srcdir)/lib
 put_srcdir := $(srcdir)/put
 restore_srcdir := $(srcdir)/restore
 list_srcdir := $(srcdir)/list
 
-objdir := obj
 lib_objdir += $(objdir)/lib
 shared_lib_objdir += $(lib_objdir)/shared
 static_lib_objdir += $(lib_objdir)/static
 put_objdir += $(objdir)/put
 restore_objdir += $(objdir)/restore
 list_objdir += $(objdir)/list
-
-bindir := bin
-libdir := lib
-incdir := include
 
 include Makefile.conf
 
@@ -61,26 +61,21 @@ localdirs :=\
 	$(libdir)\
 	$(incdir)
 
-vpath %.cpp $(lib_srcsdir)
-vpath %.cpp $(put_srcsdir)
-vpath %.cpp $(restore_srcsdir)
-vpath %.cpp $(list_srcsdir)
-
 define make-build-lib-shared-obj-goal
 $2: $1
-	$(CPP) -c $$^ -o $$@ $(LIBCPPFLAGS) $(LIB_INCLUDES)
+	$(COMPILE.cc) $(shared_lib_CXXFLAGS) $$^ -o $$@
 endef
 define make-build-lib-static-obj-goal
 $2: $1
-	$(CPP) -c $$^ -o $$@ $(CPPFLAGS) $(LIB_INCLUDES)
+	$(COMPILE.cc) $$^ -o $$@
 endef
 define make-build-app-obj-goal
 $2: $1
-	$(CPP) -c $$^ -o $$@ $(CPPFLAGS) $(APP_INCLUDES)
+	$(COMPILE.cc) $$^ -o $$@
 endef
 define make-cp-lib-headers-goal
 $2: $1
-	cp $$^ $$@
+	$(copy) $$^ $$@
 endef
 
 target_shared_lib := $(libdir)/lib$(lib_name).so
@@ -101,29 +96,31 @@ libs :=\
 all: $(localdirs) $(libs) $(lib_headers) $(apps)
 
 clean:
-	$(RM) -r $(objdir)/*
-	$(RM) -r $(bindir)/*
-	$(RM) -r $(libdir)/*
-	$(RM) -r $(incdir)/*
+	$(RM) -r $(objdir)
+	$(RM) -r $(bindir)
+	$(RM) -r $(libdir)
+	$(RM) -r $(incdir)
+	$(RM) config.{h,log,status}
+	$(RM) Makefile
 
 $(target_shared_lib): $(shared_lib_objs)
-	$(LD) $(LIBLDFLAGS) $(LIB_LIBS) $^ -o $@
+	$(LINK.cc) $(shared_lib_LDFLAGS) $^ -o $@
 
 $(target_static_lib): $(static_lib_objs)
-	ar rv $@ $^
-	ranlib $@
+	$(AR) $(ARFLAGS) $@ $^
+	$(ranlib) $@
 
 $(target_put): $(put_objs)
-	$(LD) $(LDFLAGS) $(APP_LIBS) $^ -o $@
+	$(LINK.cc) $(apps_LDFLAGS) $^ -o $@
 
 $(target_restore): $(restore_objs)
-	$(LD) $(LDFLAGS) $(APP_LIBS) $^ -o $@
+	$(LINK.cc) $(apps_LDFLAGS) $^ -o $@
 
 $(target_list): $(list_objs)
-	$(LD) $(LDFLAGS) $(APP_LIBS) $^ -o $@
+	$(LINK.cc) $(apps_LDFLAGS) $^ -o $@
 
 $(localdirs):
-	mkdir -p $@
+	$(mkdir) $@
 
 $(foreach obj, $(shared_lib_objs), $(eval $(call make-build-lib-shared-obj-goal, $(patsubst $(shared_lib_objdir)/%.o, $(lib_srcdir)/%.cpp, $(obj)), $(obj))))
 $(foreach obj, $(static_lib_objs), $(eval $(call make-build-lib-static-obj-goal, $(patsubst $(static_lib_objdir)/%.o, $(lib_srcdir)/%.cpp, $(obj)), $(obj))))
