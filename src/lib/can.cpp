@@ -139,11 +139,11 @@ void can::create_directory(const fs::path& path)
 	file directory{path};
 	if (directory.is_directory() == false)
 	{
-		throw std::runtime_error{"File "_s + directory.as<std::string>() + " is not a directory"};
+		throw std::runtime_error{std::string("File ") + directory.as<std::string>() + " is not a directory"};
 	}
 	if (directory.is_writeable_by(user::current()) == false)
 	{
-		throw std::runtime_error{"File "_s + directory.as<std::string>() + " is not writeable"};
+		throw std::runtime_error{std::string("File ") + directory.as<std::string>() + " is not writeable"};
 	}
 }
 

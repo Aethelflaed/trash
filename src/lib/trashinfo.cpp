@@ -89,12 +89,12 @@ trashinfo::trashinfo(fs::path file)
 	if (vm.count("Trash Info.Path"))
 		this->path = vm["Trash Info.Path"].as<std::vector<std::string>>()[0];
 	else
-		throw std::runtime_error{"Broken trashinfo file"_s + this->file.string()};
+		throw std::runtime_error{std::string("Broken trashinfo file") + this->file.string()};
 
 	if (vm.count("Trash Info.DeletionDate"))
 		this->path = vm["Trash Info.DeletionDate"].as<std::vector<std::string>>()[0];
 	else
-		throw std::runtime_error{"Broken trashinfo file"_s + this->file.string()};
+		throw std::runtime_error{std::string("Broken trashinfo file") + this->file.string()};
 }
 
 /**
@@ -107,7 +107,7 @@ trashinfo::trashinfo(fs::path file, fs::path path)
 	int fildes = open(this->file.c_str(), O_CREAT | O_EXCL | O_WRONLY, 0640);
 	if (fildes < 0)
 	{
-		throw std::runtime_error{"Unable to create file "_s + this->file.string()};
+		throw std::runtime_error{std::string("Unable to create file ") + this->file.string()};
 	}
 
 	this->path = this->url_encode(path.string());
@@ -123,12 +123,12 @@ trashinfo::trashinfo(fs::path file, fs::path path)
 	if (write(fildes, content, strlen(content)) == -1)
 	{
 		close(fildes);
-		throw std::runtime_error{"Error while writing file "_s + this->file.string()};
+		throw std::runtime_error{std::string("Error while writing file ") + this->file.string()};
 	}
 
 	if (close(fildes) != 0)
 	{
-		throw std::runtime_error{"Error while closing file "_s + this->file.string()};
+		throw std::runtime_error{std::string("Error while closing file ") + this->file.string()};
 	}
 }
 
