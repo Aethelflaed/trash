@@ -114,7 +114,7 @@ $(target_static_lib): $(static_lib_objs)
 	ranlib $@
 
 $(target_put): $(put_objs)
-	$(LD) $(LDFLAGS) $(APP_LIBS) $^ -o $@ -static
+	$(LD) $(LDFLAGS) $(APP_LIBS) $^ -o $@
 
 $(target_restore): $(restore_objs)
 	$(LD) $(LDFLAGS) $(APP_LIBS) $^ -o $@
