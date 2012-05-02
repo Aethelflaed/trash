@@ -39,17 +39,17 @@ namespace trash
 			uintmax_t get_size() const noexcept
 			{ return this->stat_info->st_size; }
 
-			fs::perms get_perms() const noexcept
-			{ return this->status.permissions(); }
+			mode_t get_perms() const noexcept
+			{ return this->stat_info->st_mode; }
 			fs::file_type get_type() const noexcept
 			{ return this->status.type(); }
 
 			bool has_suid() const noexcept
-			{ return this->get_perms() & fs::set_uid_on_exe; }
+			{ return this->get_perms() & 04000; }
 			bool has_sgid() const noexcept
-			{ return this->get_perms() & fs::set_gid_on_exe; }
+			{ return this->get_perms() & 02000; }
 			bool has_sticky() const noexcept
-			{ return this->get_perms() & fs::sticky_bit; }
+			{ return this->get_perms() & 01000; }
 
 			bool is_readable_by(const user& user) const noexcept;
 			bool is_writeable_by(const user& user) const noexcept;

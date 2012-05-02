@@ -6,7 +6,6 @@
 #include <boost/bind.hpp>
 #include <iostream>
 #include <boost/algorithm/string/replace.hpp>
-#include <string.hpp>
 
 using namespace ::trash;
 
@@ -121,7 +120,7 @@ void Options::setInteractiveString(const std::string& interactive) noexcept
 	}
 	else
 	{
-		abort("invalid parameter for --interactive -- "_s + interactive);
+		abort(std::string("invalid parameter for --interactive -- ") + interactive);
 	}
 }
 void Options::setInteractiveOnce(bool value) noexcept

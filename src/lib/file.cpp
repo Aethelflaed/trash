@@ -1,5 +1,4 @@
 #include "file.hpp"
-#include "string.hpp"
 
 #include <stdexcept>
 #include <utility>
@@ -14,7 +13,7 @@ file::file(fs::path path)
 	//stat should return 0
 	if (stat(this->as<const char*>(), this->stat_info.get()))
 	{
-		throw std::runtime_error{"can't stat file "_s + this->path.string()};
+		throw std::runtime_error{std::string("can't stat file ") + this->path.string()};
 	}
 }
 

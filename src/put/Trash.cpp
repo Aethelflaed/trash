@@ -1,5 +1,4 @@
 #include "Trash.hpp"
-#include <string.hpp>
 #include <file.hpp>
 #include <user.hpp>
 #include <boost/algorithm/string/predicate.hpp>
@@ -64,7 +63,7 @@ bool Trash::check(const fs::path& path)
 		boost::algorithm::ends_with(file, "/.") ||
 		boost::algorithm::ends_with(file, "/.."))
 	{
-		report("cannot remove directory: ‘"_s + file + "’");
+		report(std::string("cannot remove directory: ‘") + file + "’");
 		return false;
 	}
 
@@ -197,7 +196,7 @@ bool Trash::prompt(fs::path path)
 
 std::string Trash::cannot_remove(const std::string& filename, const std::string& msg)
 {
-	return "cannot remove ‘"_s + filename + "’: " + msg;
+	return std::string("cannot remove ‘") + filename + "’: " + msg;
 }
 std::string Trash::cannot_remove(const fs::path& path, const std::string& msg)
 {
@@ -207,7 +206,7 @@ std::string Trash::cannot_remove(const fs::path& path, const std::string& msg)
 
 std::string Trash::get_usage() const noexcept
 {
-	return "usage `"_s + this->get_name() + " [OPTIONS] file ...`";
+	return std::string("usage `") + this->get_name() + " [OPTIONS] file ...`";
 }
 std::string Trash::get_name() const noexcept
 {

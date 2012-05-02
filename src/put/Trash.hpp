@@ -1,6 +1,7 @@
 #ifndef TRASH_PUT_TRASH_HPP
 #define TRASH_PUT_TRASH_HPP
 
+#include "header.hpp"
 #include <application.hpp>
 #include "Options.hpp"
 #include <boost/filesystem.hpp>
