@@ -36,8 +36,6 @@ private:
 
 	bool prompt(fs::path path);
 
-	std::string getTime();
-
 	std::string cannot_remove(const std::string& filename, const std::string& msg);
 	std::string cannot_remove(const fs::path& path, const std::string& msg);
 };

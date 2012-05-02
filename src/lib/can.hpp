@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include "user.hpp"
+#include "file.hpp"
 
 namespace fs = ::boost::filesystem;
 
@@ -16,26 +17,26 @@ namespace trash
 		public:
 			static can& get_for(fs::path file);
 
-			const fs::path& getPath() const noexcept;
-
-			operator const fs::path&();
-			operator const std::string&();
 			bool operator==(const fs::path& directory_path);
 
-			void put(const fs::path& path);
+			bool put(const fs::path& path);
 		private:
-			static bool isInHome(const fs::path& file);
-			static can& getCanInDirectory(fs::path directory_path, bool fs_trash = true);
+			static bool is_in_home(const fs::path& file);
+			static can& can_for_directory(fs::path directory_path, bool fs_trash = true);
 
 			can(fs::path path, bool fs_trash = true);
-			void setCanInTopDirectory(const fs::path& path, bool dotTrash = true);
-			void createDirectory();
-			void createDirectory(const fs::path& path);
+
+			void set_top_dir_can_1(fs::path path);
+			void set_top_dir_can_2(fs::path path);
+
+			void create_directory(const fs::path& path);
 
 			static std::vector<can> trashcans;
 
-			fs::path path;
-			fs::path directory;
+			file path;
+			file files;
+			file info;
+			fs::path for_directory;
 			bool fs_trash;
 	};
 }
