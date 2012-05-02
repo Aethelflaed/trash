@@ -17,8 +17,6 @@ namespace trash
 		public:
 			static can& get_for(fs::path file);
 
-			operator const fs::path&();
-			operator const std::string&();
 			bool operator==(const fs::path& directory_path);
 
 			void put(const fs::path& path);
