@@ -61,11 +61,6 @@ localdirs :=\
 	$(libdir)\
 	$(incdir)
 
-vpath %.cpp $(lib_srcsdir)
-vpath %.cpp $(put_srcsdir)
-vpath %.cpp $(restore_srcsdir)
-vpath %.cpp $(list_srcsdir)
-
 define make-build-lib-shared-obj-goal
 $2: $1
 	$(COMPILE.cc) $(shared_lib_CXXFLAGS) $$^ -o $$@
