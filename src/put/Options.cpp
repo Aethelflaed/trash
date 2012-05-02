@@ -6,7 +6,6 @@
 #include <boost/bind.hpp>
 #include <iostream>
 #include <boost/algorithm/string/replace.hpp>
-#include <string.hpp>
 
 using namespace ::trash;
 

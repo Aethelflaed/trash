@@ -1,5 +1,4 @@
 #include "Trash.hpp"
-#include <string.hpp>
 #include <file.hpp>
 #include <user.hpp>
 #include <boost/algorithm/string/predicate.hpp>

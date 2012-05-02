@@ -1,6 +1,5 @@
 #include "application.hpp"
 #include "options.hpp"
-#include "string.hpp"
 #include <utility>
 
 using namespace ::trash;

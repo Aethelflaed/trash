@@ -1,5 +1,4 @@
 #include "can.hpp"
-#include "string.hpp"
 #include <utility>
 #include <algorithm>
 #include <sstream>
