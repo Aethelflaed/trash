@@ -19,9 +19,8 @@ namespace trash
 	{
 		public:
 			file(fs::path path);
+			file() noexcept {}
 
-			operator fs::path() const noexcept
-			{ return this->path; }
 			operator const char*() const noexcept
 			{ return this->path.c_str(); }
 

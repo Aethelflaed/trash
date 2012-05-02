@@ -4,13 +4,10 @@
 #include <user.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem/fstream.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <sstream>
 #include <unistd.h>
 
 using namespace ::trash;
-
-namespace pt = ::boost::posix_time;
 
 Trash::Trash() noexcept
 	:application()
@@ -76,7 +73,23 @@ bool Trash::check(const fs::path& path)
 
 void Trash::trash(const fs::path& path)
 {
-	can::get_for(path).put(path);
+	bool directory = fs::is_directory(path);
+	if (can::get_for(path).put(path))
+	{
+		if (this->opts_as<Options>()->isVerbose())
+		{
+			std::ostringstream oss;
+			oss << "trashed ";
+			if (directory)
+				oss << "directory: ";
+			oss << "‘" << path.string() << "’\n";
+			this->message(oss.str());
+		}
+	}
+	else
+	{
+		this->report(this->cannot_remove(path, "Permission denied"));
+	}
 }
 
 void Trash::erase(const fs::path& path)
@@ -180,16 +193,6 @@ bool Trash::prompt(fs::path path)
 		return ask(oss.str());
 	}
 	return true;
-}
-
-std::string Trash::getTime()
-{
-	std::ostringstream oss;
-	const pt::ptime now = pt::second_clock::local_time();
-	pt::time_facet*const f = new pt::time_facet("%Y-%m-%d %H:%M:%S");
-	oss.imbue(std::locale(oss.getloc(), f));
-	oss << now;
-	return oss.str();
 }
 
 std::string Trash::cannot_remove(const std::string& filename, const std::string& msg)
