@@ -4,4 +4,3 @@ lib/
 include/
 test/
 !src/lib
-autom4te.cache/
