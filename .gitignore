@@ -3,4 +3,5 @@ obj/
 lib/
 include/
 test/
+.DS_Store
 !src/lib
