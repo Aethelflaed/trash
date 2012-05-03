@@ -18,7 +18,7 @@ version := "1.0"
 CXX := @CXX@
 
 CXXFLAGS +=\
-	--std=c++0x\
+	@CXXFLAGS@\
 	-Wall\
 	-I$(incdir)\
 	@BOOST_CPPFLAGS@
@@ -29,11 +29,12 @@ shared_lib_CXXFLAGS :=\
 
 LDFLAGS +=\
 	-Wall\
-	-lboost_filesystem\
 	-lboost_system\
 	-lcppmounts\
+	@LDFLAGS@\
 	@BOOST_LDFLAGS@\
-	@BOOST_PROGRAM_OPTIONS_LIB@
+	@BOOST_PROGRAM_OPTIONS_LIB@\
+	@BOOST_FILESYSTEM_LIB@
 
 shared_lib_LDFLAGS :=\
 	$(LDFLAGS)\
