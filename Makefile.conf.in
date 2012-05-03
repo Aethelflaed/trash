@@ -21,7 +21,8 @@ CXXFLAGS +=\
 	@CXXFLAGS@\
 	-Wall\
 	-I$(incdir)\
-	@BOOST_CPPFLAGS@
+	@BOOST_CPPFLAGS@\
+	@CPPFLAGS@\
 
 shared_lib_CXXFLAGS :=\
 	$(CXXFLAGS)\
@@ -31,10 +32,11 @@ LDFLAGS +=\
 	-Wall\
 	-lboost_system\
 	-lcppmounts\
-	@LDFLAGS@\
 	@BOOST_LDFLAGS@\
 	@BOOST_PROGRAM_OPTIONS_LIB@\
-	@BOOST_FILESYSTEM_LIB@
+	@BOOST_FILESYSTEM_LIB@\
+	@LDFLAGS@\
+	@LIBS@
 
 shared_lib_LDFLAGS :=\
 	$(LDFLAGS)\
