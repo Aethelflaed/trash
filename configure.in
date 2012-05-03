@@ -38,5 +38,5 @@ AC_TYPE_MODE_T
 # Checks for library functions.
 AC_FUNC_ERROR_AT_LINE
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile Makefile.conf])
 AC_OUTPUT

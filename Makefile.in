@@ -1,4 +1,5 @@
 CXX=@CXX@
+test=@BOOST_CPPFLAGS@
 
 srcdir := src
 objdir := obj
