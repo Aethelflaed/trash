@@ -96,10 +96,9 @@ libs :=\
 all: $(localdirs) $(libs) $(lib_headers) $(apps)
 
 clean:
-	$(RM) -r $(objdir)
-	$(RM) -r $(bindir)
-	$(RM) -r $(libdir)
-	$(RM) -r $(incdir)
+	$(RM) -r $(localdirs)
+	$(RM) -r autom4te.cache
+	$(RM) autoscan.log
 	$(RM) config.{h,log,status}
 	$(RM) Makefile
 
