@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.61])
 AC_INIT([trash], [1.0], [geoffroy@planquart.fr])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
@@ -31,7 +31,7 @@ AX_BOOST_PROGRAM_OPTIONS
 AC_CHECK_HEADERS([fcntl.h string.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
-AC_CHECK_HEADER_STDBOOL
+#AC_CHECK_HEADER_STDBOOL
 AC_TYPE_UID_T
 AC_TYPE_MODE_T
 
