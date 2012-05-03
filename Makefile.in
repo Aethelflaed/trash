@@ -1,4 +1,4 @@
-srcdir := src
+srcdir := @srcdir@/src
 objdir := obj
 bindir := bin
 libdir := lib
