@@ -1,6 +1,3 @@
-CXX=@CXX@
-test=@BOOST_CPPFLAGS@
-
 srcdir := src
 objdir := obj
 bindir := bin
@@ -103,7 +100,7 @@ clean:
 	$(RM) -r autom4te.cache
 	$(RM) autoscan.log
 	$(RM) config.{h,log,status}
-	$(RM) Makefile
+	$(RM) Makefile{,.conf}
 
 $(target_shared_lib): $(shared_lib_objs)
 	$(LINK.cc) $(shared_lib_LDFLAGS) $^ -o $@
