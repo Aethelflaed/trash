@@ -1,3 +1,5 @@
+CXX=@CXX@
+
 srcdir := src
 objdir := obj
 bindir := bin
