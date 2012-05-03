@@ -1,15 +1,11 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
+AC_PREREQ([2.69])
 AC_INIT([trash], [1.0], [geoffroy@planquart.fr])
-AC_PREREQ(2.61)
 AC_CONFIG_SRCDIR([config.h.in])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 
-# Checks for programs.
-AC_PROG_CXX
-
-AC_LANG_PUSH([C++])
 m4_include([m4/ax_check_compile_flag.m4])
 m4_include([m4/ax_cxx_compile_stdcxx_11.m4])
 m4_include([m4/ax_boost_base.m4])
@@ -17,28 +13,30 @@ m4_include([m4/ax_boost_filesystem.m4])
 m4_include([m4/ax_boost_program_options.m4])
 m4_include([m4/ax_boost_system.m4])
 
+# Checks for programs.
+AC_PROG_CXX
+AC_PROG_CC
+
+AC_LANG_PUSH([C++])
 AX_CXX_COMPILE_STDCXX_11
 
 AX_BOOST_BASE([1.48])
-AX_BOOST_SYSTEM
 AX_BOOST_FILESYSTEM
 AX_BOOST_PROGRAM_OPTIONS
+#AX_BOOST_SYSTEM		# requires install.sh, thus fails
 
 # Checks for libraries.
 
 # Checks for header files.
-AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h string.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
-AC_HEADER_STDBOOL
-AC_C_CONST
+AC_CHECK_HEADER_STDBOOL
 AC_TYPE_UID_T
 AC_TYPE_MODE_T
 
 # Checks for library functions.
 AC_FUNC_ERROR_AT_LINE
-AC_FUNC_STAT
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
