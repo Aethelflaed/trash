@@ -4,6 +4,16 @@ bindir := bin
 libdir := lib
 incdir := include
 
+inst_bindir := @bindir@
+inst_libdir := @libdir@
+inst_mandir := @mandir@
+inst_incdir := @includedir@
+
+dest_bindir := $(DESTDIR)$(inst_bindir)
+dest_libdir := $(DESTDIR)$(inst_libdir)
+dest_mandir := $(DESTDIR)$(inst_mandir)
+dest_incdir := $(DESTDIR)$(inst_incdir)
+
 lib_srcdir := $(srcdir)/lib
 put_srcdir := $(srcdir)/put
 restore_srcdir := $(srcdir)/restore
