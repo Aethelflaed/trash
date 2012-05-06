@@ -1,6 +1,1 @@
-bin/
-obj/
-lib/
-include/
-test/
-!src/lib
+.DS_Store

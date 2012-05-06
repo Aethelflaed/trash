@@ -1,8 +1,18 @@
-srcdir := src
+srcdir := @srcdir@/src
 objdir := obj
 bindir := bin
 libdir := lib
 incdir := include
+
+inst_bindir := @bindir@
+inst_libdir := @libdir@
+inst_mandir := @mandir@
+inst_incdir := @includedir@
+
+dest_bindir := $(DESTDIR)$(inst_bindir)
+dest_libdir := $(DESTDIR)$(inst_libdir)
+dest_mandir := $(DESTDIR)$(inst_mandir)
+dest_incdir := $(DESTDIR)$(inst_incdir)
 
 lib_srcdir := $(srcdir)/lib
 put_srcdir := $(srcdir)/put
@@ -96,12 +106,11 @@ libs :=\
 all: $(localdirs) $(libs) $(lib_headers) $(apps)
 
 clean:
-	$(RM) -r $(objdir)
-	$(RM) -r $(bindir)
-	$(RM) -r $(libdir)
-	$(RM) -r $(incdir)
+	$(RM) -r $(localdirs)
+	$(RM) -r autom4te.cache
+	$(RM) autoscan.log
 	$(RM) config.{h,log,status}
-	$(RM) Makefile
+	$(RM) Makefile{,.conf}
 
 $(target_shared_lib): $(shared_lib_objs)
 	$(LINK.cc) $(shared_lib_LDFLAGS) $^ -o $@

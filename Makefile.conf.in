@@ -15,11 +15,14 @@ version := "1.0"
 #boost_lib_dir := -L/opt/local/lib
 #boost_inc_dir := -I/opt/local/include
 
+CXX := @CXX@
+
 CXXFLAGS +=\
-	--std=c++0x\
+	@CXXFLAGS@\
 	-Wall\
 	-I$(incdir)\
-	$(boost_inc_dir)
+	@BOOST_CPPFLAGS@\
+	@CPPFLAGS@\
 
 shared_lib_CXXFLAGS :=\
 	$(CXXFLAGS)\
@@ -27,11 +30,13 @@ shared_lib_CXXFLAGS :=\
 
 LDFLAGS +=\
 	-Wall\
-	-lboost_program_options\
-	-lboost_filesystem\
 	-lboost_system\
 	-lcppmounts\
-	$(boost_lib_dir)
+	@BOOST_LDFLAGS@\
+	@BOOST_PROGRAM_OPTIONS_LIB@\
+	@BOOST_FILESYSTEM_LIB@\
+	@LDFLAGS@\
+	@LIBS@
 
 shared_lib_LDFLAGS :=\
 	$(LDFLAGS)\
