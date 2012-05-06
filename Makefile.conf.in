@@ -16,6 +16,7 @@ version := "1.0"
 #boost_inc_dir := -I/opt/local/include
 
 CXX := @CXX@
+RANLIB := @RANLIB@
 
 CXXFLAGS +=\
 	@CXXFLAGS@\
@@ -50,5 +51,4 @@ apps_LDFLAGS :=\
 
 copy := cp
 mkdir := mkdir -p
-ranlib := ranlib
 
