@@ -117,7 +117,7 @@ $(target_shared_lib): $(shared_lib_objs)
 
 $(target_static_lib): $(static_lib_objs)
 	$(AR) $(ARFLAGS) $@ $^
-	$(ranlib) $@
+	$(RANLIB) $@
 
 $(target_put): $(put_objs)
 	$(LINK.cc) $(apps_LDFLAGS) $^ -o $@
