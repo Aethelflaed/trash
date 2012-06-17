@@ -1,1 +1,1 @@
-library=lib/
+mac.CXX=/usr/local/bin/g++

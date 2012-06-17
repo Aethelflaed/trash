@@ -1,0 +1,54 @@
+shared_lib_modules :=
+static_lib_modules :=
+put_modules :=
+restore_modules :=
+list_modules :=
+
+lib_name := trash
+put_name := trash-put
+restore_name := trash-restore
+list_name := trash-list
+
+version := "1.0"
+
+#CXX := /usr/local/bin/g++ # g++ 4.6 on my mac
+#boost_lib_dir := -L/opt/local/lib
+#boost_inc_dir := -I/opt/local/include
+
+CXX := @CXX@
+RANLIB := @RANLIB@
+
+CXXFLAGS +=\
+	@CXXFLAGS@\
+	-Wall\
+	-I$(incdir)\
+	@BOOST_CPPFLAGS@\
+	@CPPFLAGS@\
+
+shared_lib_CXXFLAGS :=\
+	$(CXXFLAGS)\
+	-fPIC
+
+LDFLAGS +=\
+	-Wall\
+	-lboost_system\
+	-lcppmounts\
+	@BOOST_LDFLAGS@\
+	@BOOST_PROGRAM_OPTIONS_LIB@\
+	@BOOST_FILESYSTEM_LIB@\
+	@LDFLAGS@\
+	@LIBS@
+
+shared_lib_LDFLAGS :=\
+	$(LDFLAGS)\
+	-shared\
+	-fPIC
+
+apps_LDFLAGS :=\
+	$(LDFLAGS)\
+	-L$(libdir)\
+	-ltrash
+
+copy := cp
+mkdir := mkdir -p
+
