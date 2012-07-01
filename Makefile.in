@@ -4,6 +4,9 @@ bindir := bin
 libdir := lib
 incdir := include
 
+prefix := @prefix@
+execprefix := @prefix@
+
 inst_bindir := @bindir@
 inst_libdir := @libdir@
 inst_mandir := @mandir@
@@ -71,6 +74,12 @@ localdirs :=\
 	$(libdir)\
 	$(incdir)
 
+destdirs :=\
+	$(dest_bindir)\
+	$(dest_libdir)\
+	$(dest_mandir)\
+	$(dest_incdir)
+
 define make-build-lib-shared-obj-goal
 $2: $1
 	$(COMPILE.cc) $(shared_lib_CXXFLAGS) $$^ -o $$@
@@ -105,6 +114,10 @@ libs :=\
 
 all: $(localdirs) $(libs) $(lib_headers) $(apps)
 
+install: $(destdirs) $(apps) $(libs)
+	cp bin/* $(dest_bindir)
+	cp lib/* $(dest_libdir)
+
 clean:
 	$(RM) -r $(localdirs)
 	$(RM) -r autom4te.cache
@@ -129,6 +142,9 @@ $(target_list): $(list_objs)
 	$(LINK.cc) $(apps_LDFLAGS) $^ -o $@
 
 $(localdirs):
+	$(mkdir) $@
+
+$(destdirs):
 	$(mkdir) $@
 
 $(foreach obj, $(shared_lib_objs), $(eval $(call make-build-lib-shared-obj-goal, $(patsubst $(shared_lib_objdir)/%.o, $(lib_srcdir)/%.cpp, $(obj)), $(obj))))
