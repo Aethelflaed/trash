@@ -33,7 +33,14 @@ namespace
 	std::string encimpl(std::string::value_type v)
 	{
 		if (isalnum(v))
-			return std::string()+v;
+		{
+			return std::string() + v;
+		}
+		if (v == '/')
+		{
+			return std::string() + '/';
+		}
+
 
 		std::ostringstream enc;
 		enc << '%' << std::setw(2) << std::setfill('0') << std::hex << std::uppercase << int(static_cast<unsigned char>(v));
@@ -109,7 +116,7 @@ trashinfo::trashinfo(fs::path file, fs::path path)
 		throw std::runtime_error{std::string("Unable to create file ") + this->file.string()};
 	}
 
-	this->path = this->url_encode(path.string());
+	this->path = this->url_encode(fs::absolute(path).string());
 	this->deletion_date = get_current_time();
 
 	std::ostringstream oss;
